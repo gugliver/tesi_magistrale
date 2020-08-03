@@ -1,20 +1,21 @@
  \documentclass[%
     corpo=11pt,
-    twoside,
-%    stile=classica,
+    %twoside,
+    stile=classica,
     oldstyle,
 %    autoretitolo,
     tipotesi=magistrale,
+    english,
     greek,
     evenboxes,
-    english,
 ]{toptesi}
 
+\english
 
 \usepackage[utf8]{inputenc}% codifica d'entrata
 \usepackage[T1]{fontenc}%    codifica dei font
 \usepackage{lmodern}%        scelta dei font
-\usepackage[utf8]{inputenc}
+
 
 
 \usepackage{hyperref}
@@ -33,6 +34,7 @@
 
 
 \begin{document}\errorcontextlines=9
+\english
 %%%%%%% Questi comandi è meglio metterli dentro l'ambiente
 %%%%%%% ThesisTitlePage con o senza asterisco, oppure in un file di
 %%%%%%% configurazione personale. Si veda la documentazione
@@ -42,35 +44,47 @@
 %%%%%%% TOPtesi.
 
 \begin{ThesisTitlePage}
+\english
 % Per cambiare la dicitura sopra la lista dei laureandi decommentare
 % la riga seguente, cambiando le 4 parole in modo consistente
 %
-\TitoloListaCandidati{Studente,Studenti,Studentessa,Studentesse}
+\TitoloListaCandidati{Candidate:, Candidate:, Candidates:, Candidates:}
 %
 \ateneo{Politecnico di Torino}
+
+
 %
 % Non tutte le università hanno un nome proprio
 %\nomeateneo{}
 %
 \struttura[III]{Matematica, Fisica e~Scienze Naturali}
 %\Materia{Remote sensing}
-\titolo{}% per la laurea quinquennale e il dottorato
+\titolo{Functional and Formal Verification on submodules of a Vector Processing Unit based on RISC-V V-extension}% per la laurea quinquennale e il dottorato
+%%%%%%% Logo della sede
+\logosede{LOGO_2.png}% 
 
 %
 %%%%%%% Corso degli studi
+\CorsoDiLaureaIn{Master's Degree in}
 \corsodilaurea{Electronic Engineering}% per la laurea
+
+\TesiDiLaurea{Master's Thesis}
+\AdvisorName{Supervisor:}
+\CoAdvisorName{Cosupervisors}
+
 %%%%%%% L'eventuale numero di matricola va fra parentesi quadre
 %\show\Candidato
 %\def\Candidato{Studente}
 %\show\Candidato
-\candidato{Vito Luca \textsc{Guglielmi}}[s265044] 
+\renewcommand*\IDlabel{\\\quad ID:\space}
+\candidato{\textsc{Guglielmi} Vito Luca }[s265044] 
 %\secondocandidato{Evangelista \textsc{Torricelli}}[123457]
 
 %%%%%%% Relatori o supervisori
 %
-    \relatore{prof.~Luciano Lavagno}
-    \secondorelatore{prof.~ Francesc Moll Echeto}
-    \terzorelatore{dott.~Oscar Palomar}
+    \relatore{Prof.~\textsc{Lavagno} Luciano}
+    \secondorelatore{Prof.~\textsc{Moll Echeto} Francesc}
+    \terzorelatore{Dr.~\textsc{Palomar} Oscar}
 % 
 %%%%%%% Per mettere altri relatori consultare toptesi-it.pdf
 
@@ -81,10 +95,9 @@
 %%%%%%% Seduta dell'esame
 %\sedutadilaurea{Agosto 1615}
 %%%%%%%% oppure:
-\sedutadilaurea{\textsc{Anno~accademico} 2019-2020}% 
+\sedutadilaurea{\textsc{October} 2020}% 
 
-%%%%%%% Logo della sede
-\logosede{LOGO.png}% 
+
 \end{ThesisTitlePage}
 
 
@@ -93,7 +106,7 @@
 %\setbindingcorrection{3mm}
 
 {\begin{dedica}
-    \normalsize{Alla mia famiglia}
+    \normalsize{Alla mia famiglia.}
 \end{dedica}
 
 \newpage
@@ -107,9 +120,9 @@
 
 
 \include{Chapter_1/Introduction}
-\include{The_work/The_work}
-\include{Contributions/Contributions}
-\include{Conclusions/Conclusions}
+\include{Chapter_2/the_work}
+\include{Chapter_3/contributions}
+\include{Chapter_4/conclusions}
 
 
 
