@@ -1,9 +1,38 @@
 \chapter{Introduction}
+In this Chapter there will be presented the important concepts to understand the whole work done. \\
+There will be discussed all the RISC-V and V-Extension concepts, useful to understand the context and then the progress done.\\
 
 \section{Concepts}
 \subsection{RISC-V}
+RISC-V is an open, extensible and free instruction set architecture (ISA). It was originally designed to support computer architecture research and education\cite{RISC-V-Instruction-Set-Manual}.\\
+The project began at the Berkley, University of California in 2010, and then in 2011 was published the first ISA User Manual. After that there was the first tapeout of a RISC-V chip in 28nm FDSOI donated by STMicroelectronics.\\
+
+The RISC-V ISA is implemented as a base integer ISA, but it is modular and so supports  variable-length instruction encodings.\\
+This ISA is provided under open source licenses, and it is gaining a lot of popularity due to its open nature. \\
+%to change begin
+There are two primary base integer variants, RV32I and RV64I, which provide 32-bit or 64-bit user-level address spaces respectively.
+
+RISC-V has been designed to support extensive customization and specialization. The base integer ISA can be extended with one or more optional instruction-set extensions, but the base integer instructions cannot be redeﬁned.
+
+We divide RISC-V instruction-set extensions into standard and non-standard extensions. Standard extensions should be generally useful and should not conﬂict with other standard extensions. Non-standard extensions may be highly specialized, or may conﬂict with other standard or non-standard extensions.
+
+To support more general software development, a set of standard extensions are deﬁned to provide integer multiply/divide, atomic operations, and single and double-precision ﬂoating-point arithmetic. The base integer ISA is named “I” (preﬁxed by RV32 or RV64 depending on integer register width), and contains integer computational instructions, integer loads, integer stores, and control-ﬂow instructions, and is mandatory for all RISC-V implementations. The standard integer multiplication and division extension is named “M”, and adds instructions to multiply and divide values held in the integer registers. The standard atomic instruction extension, denoted by “A”, adds instructions that atomically read, modify, and write memory for inter-processor synchronization. The standard single-precision ﬂoating-point extension, denoted by “F”, adds ﬂoating-point registers, single-precision computational instructions, and single-precision loads and stores. The standard double-precision ﬂoating-point extension, denoted by “D”, expands the ﬂoating-point registers, and adds double-precision computational instructions, loads, and stores. An integer base plus these four standard extensions (“IMAFD”) is given the abbreviation “G” and provides a general-purpose scalar instruction set. RV32G and RV64G are currently the default target of our compiler toolchains. Later chapters describe these and other planned standard RISC-V extensions.
+
+Beyond the base integer ISA and the standard extensions, it is rare that a new instruction will provide a signiﬁcant beneﬁt for all applications, although it may be very beneﬁcial for a certain domain. As energy eﬃciency concerns are forcing greater specialization, we believe it is important to simplify the required portion of an ISA speciﬁcation. Whereas other architectures usually treat their ISA as a single entity, which changes to a new version as instructions are added over time, RISC-V will endeavor to keep the base and each standard extension constant over time, and instead layer new instructions as further optional extensions. For example, the base integer ISAs will continue as fully supported standalone ISAs, regardless of any subsequent extensions.
+
+%% here add the image of the base instruction formats and then  the 2.6 paragraph for load and stores
+
+
 \subsection{Vectors and RISC-V V-Extension}
+
+%% chapter 10 and 15
+
+%%https://www.european-processor-initiative.eu/v-for-vector-software-exploration-of-the-vector-extension-of-risc-v/
+
+%%github risc-v 0.7.1
 \subsection{Verification}
+%% Ray Ray
+
 
 \section{Context}
 \subsection{The VPU}

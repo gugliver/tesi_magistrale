@@ -10,7 +10,7 @@
     evenboxes,
 ]{toptesi}
 
-\english
+%\english
 
 \usepackage[utf8]{inputenc}% codifica d'entrata
 \usepackage[T1]{fontenc}%    codifica dei font
@@ -30,7 +30,7 @@
     urlcolor={blue}
   }
 
-
+\ExtendCaptions{english}{Abstract}{Acknowledgements}
 
 
 \begin{document}\errorcontextlines=9
@@ -44,7 +44,7 @@
 %%%%%%% TOPtesi.
 
 \begin{ThesisTitlePage}
-\english
+
 % Per cambiare la dicitura sopra la lista dei laureandi decommentare
 % la riga seguente, cambiando le 4 parole in modo consistente
 %
@@ -105,12 +105,12 @@
 %%%%%%% meno offset c'e', meglio e'
 %\setbindingcorrection{3mm}
 
-{\begin{dedica}
+\begin{dedica}
     \normalsize{Alla mia famiglia.}
 \end{dedica}
 
 \newpage
-\english
+
 \include{abstract}
 
 
@@ -148,4 +148,3 @@
 
 
 
-\end{document}
