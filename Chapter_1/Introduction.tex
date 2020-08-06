@@ -1,6 +1,10 @@
 \chapter{Introduction}
-In this Chapter there will be presented the important concepts to understand the whole work done. \\
-There will be discussed all the RISC-V and V-Extension concepts, useful to understand the context and then the progress done.\\
+This thesis is based on part of the EPI-project, developed at Barcelona Supercomputing Center, in particular on the V-Extension implementation.
+In this Chapter there will be presented and discussed all the RISC-V and V-Extension concepts, but they will be not covered all the topics regarding the RISC-V ISA or all the extensions, as they are not always relevant to the project.\\
+Starting from the Concepts there will be also an explaination on the context of the project, so the real implementation and application of the ISA specifications.
+In particular there will be a exposition of Verification concepts and on the UVM structure, filled by the details useful to understand the work done.
+
+
 
 \section{Concepts}
 \subsection{RISC-V}
@@ -9,18 +13,55 @@ The project began at the Berkley, University of California in 2010, and then in 
 
 The RISC-V ISA is implemented as a base integer ISA, but it is modular and so supports  variable-length instruction encodings.\\
 This ISA is provided under open source licenses, and it is gaining a lot of popularity due to its open nature. \\
-%to change begin
-There are two primary base integer variants, RV32I and RV64I, which provide 32-bit or 64-bit user-level address spaces respectively.
+Mainly there are two primary base integer variants, RV32I and RV64I, which provide 32-bit or 64-bit user-level address spaces respectively.\\
 
-RISC-V has been designed to support extensive customization and specialization. The base integer ISA can be extended with one or more optional instruction-set extensions, but the base integer instructions cannot be redeﬁned.
+RISC-V is designed to have good customization and so it's provided with the possibility to be extended, but the base integer instructions cannot be redeﬁned.\\
+There are two kinds of extensions:
+\textit{standard} and \textit{non-standard}.
+\begin{itemize}
+    \item The \textit{standard} ones need to be compatible with all the other standards and also they should aim to be generally useful.
+    \item The \textit{non-standard} ones can be highly specialized in some task and so can be in conflict with other extensions.
+\end{itemize}
 
-We divide RISC-V instruction-set extensions into standard and non-standard extensions. Standard extensions should be generally useful and should not conﬂict with other standard extensions. Non-standard extensions may be highly specialized, or may conﬂict with other standard or non-standard extensions.
+For general development some standard extensions are predefined:
+\begin{itemize}
+    \item "\textbf{I}" is the base integer extension and contains integer computational instructions, integer loads, integer stores, and control-ﬂow instructions. It is mandatory for all RISC-V implementations.
+    
+    \item "\textbf{M}" is the standard integer multiplication and division extension, it allows to multiply and divide the values held in the integer registers.
+    
+    \item "\textbf{A}" is the standard atomic instruction extension. For inter-processor synchronization is useful to have atomic instructions so with this extension is possible to read, modify, and write memory atomically . 
+    
+    \item "\textbf{F}" is the standard single-precision ﬂoating-point extension. It adds ﬂoating-point registers, single-precision computational instructions, and single-precision loads and stores. 
+    
+    \item "\textbf{D}" The standard double-precision ﬂoating-point extension. It is useful when the F extension is not enough, so expands it and adds double-precision computational instructions, loads, and stores.
+    
+    \item "\textbf{G}" is the denotation for an integer base plus these four standard extensions (“IMAFD”).
+\end{itemize}
 
-To support more general software development, a set of standard extensions are deﬁned to provide integer multiply/divide, atomic operations, and single and double-precision ﬂoating-point arithmetic. The base integer ISA is named “I” (preﬁxed by RV32 or RV64 depending on integer register width), and contains integer computational instructions, integer loads, integer stores, and control-ﬂow instructions, and is mandatory for all RISC-V implementations. The standard integer multiplication and division extension is named “M”, and adds instructions to multiply and divide values held in the integer registers. The standard atomic instruction extension, denoted by “A”, adds instructions that atomically read, modify, and write memory for inter-processor synchronization. The standard single-precision ﬂoating-point extension, denoted by “F”, adds ﬂoating-point registers, single-precision computational instructions, and single-precision loads and stores. The standard double-precision ﬂoating-point extension, denoted by “D”, expands the ﬂoating-point registers, and adds double-precision computational instructions, loads, and stores. An integer base plus these four standard extensions (“IMAFD”) is given the abbreviation “G” and provides a general-purpose scalar instruction set. RV32G and RV64G are currently the default target of our compiler toolchains. Later chapters describe these and other planned standard RISC-V extensions.
 
-Beyond the base integer ISA and the standard extensions, it is rare that a new instruction will provide a signiﬁcant beneﬁt for all applications, although it may be very beneﬁcial for a certain domain. As energy eﬃciency concerns are forcing greater specialization, we believe it is important to simplify the required portion of an ISA speciﬁcation. Whereas other architectures usually treat their ISA as a single entity, which changes to a new version as instructions are added over time, RISC-V will endeavor to keep the base and each standard extension constant over time, and instead layer new instructions as further optional extensions. For example, the base integer ISAs will continue as fully supported standalone ISAs, regardless of any subsequent extensions.
+The design philosophy of the RISC-V projects is based on modularity: the base ISA will not change over time, but new extensions will be available and new feature will be added. This is useful because is very difficult to find general useful extension beyond the ones already exist. So it wouldn't be convenient to constantly add new features to the base ISA and then have to keep track of that.\\
+In Figure \ref{riscv-base-instruction-formats} it is possible to see how the base instruction are composed.
 
-%% here add the image of the base instruction formats and then  the 2.6 paragraph for load and stores
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.27]{Chapter_1/img/riscv-base-instruction-formats.png}
+    \caption{RISC-V base instruction formats. Each immediate subﬁeld is labeled with the bit position (imm[x]) in the immediate value being produced, rather than the bit position within the instruction’s immediate ﬁeld as is usually done.\cite{RISC-V-Instruction-Set-Manual}}
+    \label{riscv-base-instruction-formats}
+\end{figure}
+
+It is important to notice that RISC-V is a load-store architecture, this means only load and store operations can have access to the memory.\\
+It is a very convenient organization, because it reduces the average time-per-operation and guarantees a good functioning of the pipelined structure.\\
+
+It also supports signed byte and half word loads, which is very useful when  working with signed byte and half word data types.
+
+In Figure \ref{riscv-load-store} it is possible to see how the load-store instructions are composed.
+
+\begin{figure}[h]
+    \centering
+    \includegraphics[scale = 0.27]{Chapter_1/img/riscv-load-store.png}
+    \caption{RISC-V load/store instruction formats. It is possible to see that the LOAD is a I-type op and the STORE is an S-type op. \cite{RISC-V-Instruction-Set-Manual}}
+    \label{riscv-load-store}
+\end{figure}
 
 
 \subsection{Vectors and RISC-V V-Extension}
