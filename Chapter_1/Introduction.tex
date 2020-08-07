@@ -42,10 +42,10 @@ For general development some standard extensions are predefined:
 The design philosophy of the RISC-V projects is based on modularity: the base ISA will not change over time, but new extensions will be available and new feature will be added. This is useful because is very difficult to find general useful extension beyond the ones already exist. So it wouldn't be convenient to constantly add new features to the base ISA and then have to keep track of that.\\
 In Figure \ref{riscv-base-instruction-formats} it is possible to see how the base instruction are composed.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[scale = 0.27]{Chapter_1/img/riscv-base-instruction-formats.png}
-    \caption{RISC-V base instruction formats. Each immediate subﬁeld is labeled with the bit position (imm[x]) in the immediate value being produced, rather than the bit position within the instruction’s immediate ﬁeld as is usually done.\cite{RISC-V-Instruction-Set-Manual}}
+    \caption{RISC-V base instruction formats. \cite{RISC-V-Instruction-Set-Manual}}
     \label{riscv-base-instruction-formats}
 \end{figure}
 
@@ -54,28 +54,125 @@ It is a very convenient organization, because it reduces the average time-per-op
 
 It also supports signed byte and half word loads, which is very useful when  working with signed byte and half word data types.
 
-In Figure \ref{riscv-load-store} it is possible to see how the load-store instructions are composed.
+In Figure \ref{riscv-load-store} it is possible to see how the load-store instructions are composed, and that the LOAD is a I-type op and the STORE is an S-type op.
 
-\begin{figure}[h]
+\begin{figure}[H]
     \centering
     \includegraphics[scale = 0.27]{Chapter_1/img/riscv-load-store.png}
-    \caption{RISC-V load/store instruction formats. It is possible to see that the LOAD is a I-type op and the STORE is an S-type op. \cite{RISC-V-Instruction-Set-Manual}}
+    \caption{RISC-V load/store instruction formats. \cite{RISC-V-Instruction-Set-Manual}}
     \label{riscv-load-store}
 \end{figure}
 
 
-\subsection{Vectors and RISC-V V-Extension}
+\subsection{Parallel architectures, Vectors and RISC-V V-Extension}
+In the last years the parallel architecture are gaining inertia on the processors field. This is happening because the real world has parallel behaviour and so the hardware we use to compute simulations and calculus needs to be.\cite{Parallel-Computing}\\
+But why now and not before?\\
+In the past, parallel computing efforts have shown promise and gathered investment, but in the end, uniprocessor computing always prevailed, what is different now?\\
+Well, most of the paradigms that led to the unicore decision are now changing quickly as the technology changes its needs.\\
+As the technology scales down to the nanometers, the power consumption and the energy consumption are becoming a problem, instead the cost of a single transistor is significantly lower.\\
 
-%% chapter 10 and 15
+But the multicore solution still doesn't meet the conformity for old binaries compilations and it could be difficult to program. So the solution of a parallel architecture with "manycores" seems to be the right one.\\
 
-%%https://www.european-processor-initiative.eu/v-for-vector-software-exploration-of-the-vector-extension-of-risc-v/
+For this reason the vectors are useful. They allow to compute data in a parallel way, without having multicore programming logic.\\
+A classic example are the VPU (Vector Processing Units) working with SIMD (single instruction multiple data).\\
 
-%%github risc-v 0.7.1
+A famous example of a vector architecture is the Cray-1. It was presented in 1975, and was a load/store architecture, as seen before.
+It was designed for Supercomputing and the major feature was to have also a scalar mode. This because the vector computation is not always useful.\\
+
+As it is possible to see in Figure \ref{Multithreading} with standard multithreading there will always be some empty thread along with the running ones. This lowes the efficiency.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.3]{Chapter_1/img/multithreading.png}
+    \caption{Multithreading Processor Clock Time usage \cite{L15-Krste}}
+    \label{Multithreading}
+\end{figure}
+
+Indeed the major advantage with the Vector computation is the condensation of the processor usage. 
+So the usage will not be distributed as for standard multithreading processors, but it will have full usage for some cycles and zero usage for others\cite{L15-Krste}.\\
+
+But of course there is a drawback, in particular the Latency. In vector computing there are always some dead cycles, but this also allows to increase the efficiency with modern low-power techniques, if it is possible to decrease the energy usage during the dead time.
+The pipeline is represented in Figure \ref{Vector-Latency} and the final Clock Tima usage is represented in Figure \ref{Vectoring}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.3]{Chapter_1/img/vectoring.png}
+    \caption{Latency penalty on vector processing units\cite{L15-Krste}}
+    \label{Vector-Latency}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.4]{Chapter_1/img/vectoring_2.png}
+    \caption{Vector Processor Clock Time usage\cite{L15-Krste}}
+    \label{Vectoring}
+\end{figure}
+The RISC-V solution is V-Extension (V stands for Vector), and is in current development, in this thesis the reference will be the V-Extension 0.7.1.
+
+The vector extension adds 32 vector registers, and five unprivileged CSRs (vstart, vxsat, vxrm, vtype, vl) to a base scalar RISC-V ISA\cite{riscv-v-specs}.
+There are also 8 vector predicate registers (vp0-vp7). The CSRs vectors define the configurations.
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|l|}
+\hline
+Address & Privilege & Name   & Description               \\ \hline
+0x008   & URW       & vstart & Vector start position     \\ \hline
+0x009   & URW       & vxsat  & Fixed-point Saturate Flag \\ \hline
+0x00A   & URW       & vxrm   & Fixed-Point Rounding Mode \\ \hline
+0xC20   & URO       & vl     & Vector length             \\ \hline
+0xC21   & URO       & vtype  & Vector data type register \\ \hline
+\end{tabular}
+\end{table}
+
+Based on the base scalar ISA and on the extensions implemented the datatypes and operations supported by the V extension change and they can be 16-bit, 32-bit, 64-bit, and 128-bit ﬂoating-point types or fixed-point types (F16, F32, F64, and F128, or X8, X16, X32, X64, and X128 respectively) \cite{riscv-v-specs}.\\
+
+
+The vector unit must be conﬁgured before use. 
+The active vector length is held in the CSR vl, which can only hold values between 0 and MVL inclusive.
+The active vector length is usually written with the setvl instruction.\\
+
+Other than the base instruction we can expect from a Vector Architecture (as a move, add, xor and so on) it is possible to find some useful operations related to the nature of the vector calculus\cite{riscv-v-specs}:
+\begin{itemize}
+    \item \textbf{vectorial load/store}: those can strided or indexed. The strided ones index the elements referring to a starting one and then adding (or subtracting) a certain stride. This kind of load/store is very fast, in particular in some special cases (as unit-strided or some optimized power of 2).\\
+    The elements into the indexed ones are basically pointed with an index. This process really slows down the operation but allows to select directly the elements.
+    
+    \item \textbf{widening/narrowing}: those operation are used to increase or decrease the size of the vector's contents, in fact they are very useful when performing operations that need to increase the result size (as example a multiplication between to integer at 32 bit needs to have 64 bit to not loose information). There are also few operations that require the inverse rrsizing, so the narrowing.
+    
+    \item \textbf{gather}: those are very particular operations and very useful when manipulating vectors. They allow to index a vector using another vector as index. In this way varioius patterns are possible.
+    
+    \item \textbf{reduction}: finally the reduction can perform an operation between a scalar and a vector and give as result a scalar (an easy example could be to calculate the maximum value between all the value contained in a vector and one scalar, the result would either be one of the element of the vector or the scalar).
+    
+\end{itemize}
+
+
+Finally all those operations can be \textit{masked}. The masking is a common operation when there is branching or when complex patterns emerge.
+Normally one bit of the mask represent a whole work or byte into the vector. Then an AND op is performed to have the final result. 
+
 \subsection{Verification}
+Verification is cool 60\% project. 
+
+various part discussed in future. 
+
+everything needs to be verified, there is no exact model.
+
+white box and black box.
+
+steps of verification (we are close to design and specs)
+
+functional, formal verification. UVM 
+
+
 %% Ray Ray
 
+%%libri 2012 e 2016
 
 \section{Context}
 \subsection{The VPU}
+%%images by victor, take the google drive infos
+
+
 \subsection{The UVM}
+%%the all draw in to the wiki and the main description of every piece would be great.
+
 \subsection{Submodules and checkers}
+%description on LB and LMU mainly and on the checkers in generale
