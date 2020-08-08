@@ -82,8 +82,8 @@ It was designed for Supercomputing and the major feature was to have also a scal
 As it is possible to see in Figure \ref{Multithreading} with standard multithreading there will always be some empty thread along with the running ones. This lowes the efficiency.
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.3]{Chapter_1/img/multithreading.png}
-    \caption{Multithreading Processor Clock Time usage \cite{L15-Krste}}
+    \includegraphics[scale = 0.4]{Chapter_1/img/multithreading.png}
+    \caption{Multithreading Processor Clock Time usage  \cite{L15-Krste}}
     \label{Multithreading}
 \end{figure}
 
@@ -95,15 +95,15 @@ The pipeline is represented in Figure \ref{Vector-Latency} and the final Clock T
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.3]{Chapter_1/img/vectoring.png}
-    \caption{Latency penalty on vector processing units\cite{L15-Krste}}
+    \includegraphics[scale = 0.4]{Chapter_1/img/vectoring.png}
+    \caption{Latency penalty on vector processing units \cite{L15-Krste}}
     \label{Vector-Latency}
 \end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.4]{Chapter_1/img/vectoring_2.png}
-    \caption{Vector Processor Clock Time usage\cite{L15-Krste}}
+    \caption{Vector Processor Clock Time usage \cite{L15-Krste}}
     \label{Vectoring}
 \end{figure}
 The RISC-V solution is V-Extension (V stands for Vector), and is in current development, in this thesis the reference will be the V-Extension 0.7.1.
@@ -112,16 +112,18 @@ The vector extension adds 32 vector registers, and five unprivileged CSRs (vstar
 There are also 8 vector predicate registers (vp0-vp7). The CSRs vectors define the configurations.
 
 \begin{table}[H]
-\centering
-\begin{tabular}{|l|l|l|l|}
-\hline
-Address & Privilege & Name   & Description               \\ \hline
-0x008   & URW       & vstart & Vector start position     \\ \hline
-0x009   & URW       & vxsat  & Fixed-point Saturate Flag \\ \hline
-0x00A   & URW       & vxrm   & Fixed-Point Rounding Mode \\ \hline
-0xC20   & URO       & vl     & Vector length             \\ \hline
-0xC21   & URO       & vtype  & Vector data type register \\ \hline
-\end{tabular}
+    \centering
+    \begin{tabular}{|l|l|l|l|}
+        \hline
+        Address & Privilege & Name   & Description               \\ \hline
+        0x008   & URW       & vstart & Vector start position     \\ \hline
+        0x009   & URW       & vxsat  & Fixed-point Saturate Flag \\ \hline
+        0x00A   & URW       & vxrm   & Fixed-Point Rounding Mode \\ \hline
+        0xC20   & URO       & vl     & Vector length             \\ \hline
+        0xC21   & URO       & vtype  & Vector data type register \\ \hline
+    \end{tabular}
+    \caption{RISC-V's CSRs}
+    \label{CSRs}
 \end{table}
 
 Based on the base scalar ISA and on the extensions implemented the datatypes and operations supported by the V extension change and they can be 16-bit, 32-bit, 64-bit, and 128-bit ﬂoating-point types or fixed-point types (F16, F32, F64, and F128, or X8, X16, X32, X64, and X128 respectively) \cite{riscv-v-specs}.\\
@@ -136,9 +138,9 @@ Other than the base instruction we can expect from a Vector Architecture (as a m
     \item \textbf{vectorial load/store}: those can strided or indexed. The strided ones index the elements referring to a starting one and then adding (or subtracting) a certain stride. This kind of load/store is very fast, in particular in some special cases (as unit-strided or some optimized power of 2).\\
     The elements into the indexed ones are basically pointed with an index. This process really slows down the operation but allows to select directly the elements.
     
-    \item \textbf{widening/narrowing}: those operation are used to increase or decrease the size of the vector's contents, in fact they are very useful when performing operations that need to increase the result size (as example a multiplication between to integer at 32 bit needs to have 64 bit to not loose information). There are also few operations that require the inverse rrsizing, so the narrowing.
+    \item \textbf{widening/narrowing}: those operation are used to increase or decrease the size of the vector's contents, in fact they are very useful when performing operations that need to increase the result size (as example a multiplication between to integer at 32 bit needs to have 64 bit to not loose information). There are also few operations that require the inverse resizing, so the narrowing.
     
-    \item \textbf{gather}: those are very particular operations and very useful when manipulating vectors. They allow to index a vector using another vector as index. In this way varioius patterns are possible.
+    \item \textbf{gather}: those are very particular operations and very useful when manipulating vectors. They allow to index a vector using another vector as index. In this way various patterns are possible.
     
     \item \textbf{reduction}: finally the reduction can perform an operation between a scalar and a vector and give as result a scalar (an easy example could be to calculate the maximum value between all the value contained in a vector and one scalar, the result would either be one of the element of the vector or the scalar).
     
@@ -149,30 +151,73 @@ Finally all those operations can be \textit{masked}. The masking is a common ope
 Normally one bit of the mask represent a whole work or byte into the vector. Then an AND op is performed to have the final result. 
 
 \subsection{Verification}
-Verification is cool 60\% project. 
+As the technology scales down, the design complexity explodes. 
+Very small form factor have conflicting requirements for high performance, low-power and area constraints. 
+This lead to a complex design and to elevate the costs of it.\\
 
-various part discussed in future. 
-
-everything needs to be verified, there is no exact model.
-
-white box and black box.
-
-steps of verification (we are close to design and specs)
-
-functional, formal verification. UVM 
+It is possible to see in Figure \ref{verification-tecnology} how the cost for verification increases drastically with the lowering of the technology node.
 
 
-%% Ray Ray
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{Chapter_1/img/verification-tecnology.png}
+    \caption{Verification cost vs technology node \cite{verification-book-2018}}
+    \label{verification-tecnology}
+\end{figure}
 
-%%libri 2012 e 2016
+the verification is responsible to make sure the design is in track with the specification, so as the design complexity increases so does the verification.\\
+
+This is of course an issue for the time-to-market. 
+In particular functional design verification takes 40–50\% of the project resources. In other words, increase the productivity of functional design verification and shorten the design / simulate / debug / cover loop is an essential task \cite{verification-book-2018}.\\
+
+Also the compounded complexity grows faster that the compounded productivity. This gap only means the verification needs to be faster and so need to implement more techniques.
+It is possible to see a study on the complexity/productivity gap in Figure \ref{complexity-gap}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{Chapter_1/img/complexity-gap.png}
+    \caption{The gap between the complexity and the productivity \cite{verification-book-2018}}
+    \label{complexity-gap}
+\end{figure}
+
+
+The verification mainly is divided in Functional and Formal verification:
+\begin{itemize}
+    \item \textbf{Functional}: it need to verify if the functionalities described into the specifications are met into the design. To verify functionally it is needed to define the functionalities and write them as code (normally checkers or scoreboard). This is a very important part of the process, as this translation is never perfect and often highlights some critical point into the specs.
+    
+    \item \textbf{Formal}: the formal verification can be done in different ways as \textit{model checking}, \textit{equivalence checking} and \textit{theorem proving}. \textit{Theorem proving} tries to prove the equivalence between specs and design using mathematical reasoning. \textit{Model checking} is useful when performing optimization to the design, trying to demonstrate the various versions are mathematically equivalent. Finally the \textit{model checking} is used to try to find counter example on the behaviour of the design, and in case simulating the specific case to demonstrate the falsity.
+\end{itemize}
+
+\bigskip
+
+
+The whole process of verification need also to have a direction. For that is used Coverage. \\
+
+Coverage is very useful and can be performed on functionalities or on the code:
+\begin{itemize}
+    \item functionality: it measure the cover of all the functionalities stated by the specs. In this way it is possible to assure all the requirements are met. But this also means there is no information about not used RTL.
+    
+    \item code: it measure the cover of all the code. This means it is possible to know if there is unused code and possibly some branch of the flow. This also means there is no check about the functionalities implemented.
+
+\end{itemize}
+
+Trying to take the coverage to 100\% is the main goal. But at the same time it is easy to fool the coverage. This because it depends on how the cases are taken into account. \\
+
+To be able to use all those techniques there is the need of a structure to contain and control them.
+This structure is called \textit{UVM}, and it is formed by different classes useful to instantiate the controls and the drivers needed to verify the RTL. It will be discussed the particular case of this work later on this Chapter.
 
 \section{Context}
 \subsection{The VPU}
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.07]{Chapter_1/img/VPU-wo-LANE.jpg}
+    \caption{EPI project's VPU}
+    \label{VPU-wo-LANE}
+\end{figure}
 %%images by victor, take the google drive infos
 
+\subsection{Submodules}
+%description on LB and LMU mainly and on the checkers in generale
 
-\subsection{The UVM}
+\subsection{The UVM and the checkers}
 %%the all draw in to the wiki and the main description of every piece would be great.
 
-\subsection{Submodules and checkers}
-%description on LB and LMU mainly and on the checkers in generale
