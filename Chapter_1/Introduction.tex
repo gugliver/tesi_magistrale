@@ -15,6 +15,8 @@ The RISC-V ISA is implemented as a base integer ISA, but it is modular and so su
 This ISA is provided under open source licenses, and it is gaining a lot of popularity due to its open nature. \\
 Mainly there are two primary base integer variants, RV32I and RV64I, which provide 32-bit or 64-bit user-level address spaces respectively.\\
 
+\subsubsection{Extensions}
+
 RISC-V is designed to have good customization and so it's provided with the possibility to be extended, but the base integer instructions cannot be redeﬁned.\\
 There are two kinds of extensions:
 \textit{standard} and \textit{non-standard}.
@@ -40,6 +42,8 @@ For general development some standard extensions are predefined:
 
 
 The design philosophy of the RISC-V projects is based on modularity: the base ISA will not change over time, but new extensions will be available and new feature will be added. This is useful because is very difficult to find general useful extension beyond the ones already exist. So it wouldn't be convenient to constantly add new features to the base ISA and then have to keep track of that.\\
+
+\subsubsection{Base instructions}
 In Figure \ref{riscv-base-instruction-formats} it is possible to see how the base instruction are composed.
 
 \begin{figure}[H]
@@ -79,10 +83,11 @@ A classic example are the VPU (Vector Processing Units) working with SIMD (singl
 A famous example of a vector architecture is the Cray-1. It was presented in 1975, and was a load/store architecture, as seen before.
 It was designed for Supercomputing and the major feature was to have also a scalar mode. This because the vector computation is not always useful.\\
 
+\subsubsection{Time efficiency}
 As it is possible to see in Figure \ref{Multithreading} with standard multithreading there will always be some empty thread along with the running ones. This lowes the efficiency.
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.4]{Chapter_1/img/multithreading.png}
+    \includegraphics[scale = 0.43]{Chapter_1/img/threads.png}
     \caption{Multithreading Processor Clock Time usage  \cite{L15-Krste}}
     \label{Multithreading}
 \end{figure}
@@ -133,6 +138,7 @@ The vector unit must be conﬁgured before use.
 The active vector length is held in the CSR vl, which can only hold values between 0 and MVL inclusive.
 The active vector length is usually written with the setvl instruction.\\
 
+\subsubsection{Vector instructions}
 Other than the base instruction we can expect from a Vector Architecture (as a move, add, xor and so on) it is possible to find some useful operations related to the nature of the vector calculus\cite{riscv-v-specs}:
 \begin{itemize}
     \item \textbf{vectorial load/store}: those can strided or indexed. The strided ones index the elements referring to a starting one and then adding (or subtracting) a certain stride. This kind of load/store is very fast, in particular in some special cases (as unit-strided or some optimized power of 2).\\
@@ -179,7 +185,7 @@ It is possible to see a study on the complexity/productivity gap in Figure \ref{
     \label{complexity-gap}
 \end{figure}
 
-
+\subsubsection{Verification approaches}
 The verification mainly is divided in Functional and Formal verification:
 \begin{itemize}
     \item \textbf{Functional}: it need to verify if the functionalities described into the specifications are met into the design. To verify functionally it is needed to define the functionalities and write them as code (normally checkers or scoreboard). This is a very important part of the process, as this translation is never perfect and often highlights some critical point into the specs.
@@ -189,7 +195,7 @@ The verification mainly is divided in Functional and Formal verification:
 
 \bigskip
 
-
+\subsubsection{Coverage}
 The whole process of verification need also to have a direction. For that is used Coverage. \\
 
 Coverage is very useful and can be performed on functionalities or on the code:
@@ -207,15 +213,60 @@ This structure is called \textit{UVM}, and it is formed by different classes use
 
 \section{Context}
 \subsection{The VPU}
+In Figure \ref{VPU} it is possible to find a simplified scheme of the implemented VPU.\\
+
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.07]{Chapter_1/img/VPU-wo-LANE.jpg}
+    \includegraphics[scale = 0.4]{Chapter_1/img/VPU.png}
     \caption{EPI project's VPU}
-    \label{VPU-wo-LANE}
+    \label{VPU}
 \end{figure}
-%%images by victor, take the google drive infos
+
+The main elementes are:
+\begin{itemize}
+    \item \textbf{Renaming Unit}: the scope of this unit is to remove false dependeces due to the naming of the registers. This is possible because of the virtual memory, so the processor only uses logical registers, but in this component they are mapped to physical registers using the FRL (Free Register List).\\
+    Then this translation is tracked into the RAT (Register Alia Table) in this way the logical source register, reading the RAT, can refer to the physical register.\\
+    The last optimization is performed trying to remove the write-to-write dependencies and so avoiding also Data Hazards.\\
+    When a physical register is not useful anymore, it is pushe to the FRL at commit time.
+ 
+    \item \textbf{Queues}: the VPU is a decoupled vector architecture, this means that the arithmetic instructions and the memory instructions are buffered in different queues.\\
+    In this scheme is possible to see how the 2 queues are independent in the issue stage, in which the instructions are sent respectfully to the vector lanes or the memory unit.\\
+    The vector lane is capable to perform only one arithmetic instruction at time, so the issue queue must wait  until the previous instruction finishes its execution, but at the same time a memory instruction can be performed.\\
+    The whole Issue stage is composed by the queue and the issue logic. The number of entries in the issue queues is parameterized.
+    
+    \item \textbf{Memory Unit}: as said before, the only instructions that can access the memory are the load and the store operations. The MU receives those instructions by the memory queue and it can only perform one instruction at time. 
+    The possible addressing modes are unit-strided, strided and indexed.\\
+    
+    The memory requests are performed in order. This means there is a FIFO containing all the requests containig the useful informations as memory address, VL and stride.
+    It is also checked if the same request is performed more times.\\
+
+    There are different configurations that can be used, configuring the connection between the vector memory port and the CPU.
+    It is also possible to bypass the first level of cache or to set the parameter of the MSHRs (miss status holding registers), which can be useful for large vector implementations.
+
+    
+    \item \textbf{Vector Lane}: the Vector Lane is the core of the VPU and operates on the vector register file. It is composed by different vector processing lanes. This is a very common technique that allows to improve performance and scalability.\\
+    In an ideal multi-lane vector architecture all the lane are working simultaneously and so efficiently, with the cost of more hardware to control the synchronization.\\
+    
+    One of the most important submodules of the Vector Lane is the VRF (Vector Register File). This is designed with only one read/write port, this because it is important to limit the area usage, and so the operating frequency.
+    To avoid streaming problems and bubble inside the pipe is so necessary to have a buffer.\\
+    
+    This solution also means there is some cost in terms of latency, due to the starting of a new instruction.
+    Inside the Vector Lane are also important the WB (Write-Back Buffer) and the LB (Load Buffer). Those buffers store the data until the VRF line is complete.\\
+    Then there is the SB (Store Buffer) which hold the data read from the  register file and then sends it to the MU. 
+    Eventually when an instruction is completed the physical register are then freed. 
+    
+    The VPU can be configured with different numbers of lanes from 1 up to 8, the default value is 8.\\
+    
+    \item \textbf{Lane Interconnection}: because the Lanes can be any value between 1 and 8 is important to have a system which can synchronize all of them. There are also some operations which require to use multiple lanes at once to perform the execution, so a bidirectional ring intercommunication is implemented between the lanes.
+\end{itemize}
+
+
+Let's focus now on the submodules on which the wprk of this thesis was done:\\
+
+Load Buffer and Load Management Unit.
 
 \subsection{Submodules}
+
 %description on LB and LMU mainly and on the checkers in generale
 
 \subsection{The UVM and the checkers}
