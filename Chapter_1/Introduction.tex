@@ -100,14 +100,14 @@ The pipeline is represented in Figure \ref{Vector-Latency} and the final Clock T
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.4]{Chapter_1/img/vectoring.png}
+    \includegraphics[scale = 0.55]{Chapter_1/img/lat-pen.png}
     \caption{Latency penalty on vector processing units \cite{L15-Krste}}
     \label{Vector-Latency}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.4]{Chapter_1/img/vectoring_2.png}
+    \includegraphics[scale = 0.4]{Chapter_1/img/time-usage.png}
     \caption{Vector Processor Clock Time usage \cite{L15-Krste}}
     \label{Vectoring}
 \end{figure}
@@ -213,9 +213,15 @@ This structure is called \textit{UVM}, and it is formed by different classes use
 
 \section{Context}
 Before starting it is important to notice in this project it is not used the RISC-V scalar core to test and develop the VPU, instead it is used another core, the Avispado Core.
-In Figure %insert figure
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-it is possible to see how it is connected to the VPU.\\
+In Figure \ref{avi-vpu} it is possible to see the interface between Avispado and the VPU for all the instructions.\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{Chapter_1/img/avi-vpu.png}
+    \caption{Avispado-VPU interface}
+    \label{avi-vpu}
+\end{figure}
+
 
 The instructions are issue with a credit system, which number corresponds to the  depth of the issue queue of the VPU.\\
 
@@ -299,10 +305,23 @@ The number of elements a vector registers holds is given by VLEN/SEW, according 
     \label{sew-el}
 \end{table}
 
-In Figure %add memory figure
-it is possible to see the structure used for 64 and 32 bit as examples.
-Notice that the sub-banks are more than 1 only when the SEW is not 64.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+In Figure \ref{vrf-64} it is possible to see the structure used for SEW = 64 bit as examples.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.45]{Chapter_1/img/vrf-64.png}
+    \caption{VRF with sew = 64}
+    \label{vrf-64}
+\end{figure}
+
+Notice that the sub-banks are more than 1 only when the SEW is not 64. \\
+
+In Figure \ref{vrf-32} it is possible to identify the sub-banks as subdivision of a bank when SEW is not 64.
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.7]{Chapter_1/img/vrf-32.png}
+    \caption{VRF with sew = 32}
+    \label{vrf-32}
+\end{figure}
 
 Let's focus now on the submodules on which the work of this thesis was done.
 
@@ -318,9 +337,15 @@ This is mainly obtained with the polymorphism. It means an object can be used to
 
 It works following an hierarchy method, and every component can only operate with the components above it. In this way multiple subcomponents can be instantiated.\\
 
-\subsubsection{general UVM}
-In Figure %add UVM figure 
-it is possible to see an example of a standard UVM.
+\subsubsection{generic UVM}
+In Figure \ref{gen-uvm} it is possible to see an example of a standard UVM.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.4]{Chapter_1/img/general-uvm.png}
+    \caption{a generic UVM}
+    \label{gen-uvm}
+\end{figure}
 
 Let's now analyze some elements of a standard UVM and its implementations in the EPI project.
 
