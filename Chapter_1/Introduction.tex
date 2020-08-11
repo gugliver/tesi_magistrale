@@ -212,6 +212,17 @@ To be able to use all those techniques there is the need of a structure to conta
 This structure is called \textit{UVM}, and it is formed by different classes useful to instantiate the controls and the drivers needed to verify the RTL. It will be discussed the particular case of this work later on this Chapter.
 
 \section{Context}
+Before starting it is important to notice in this project it is not used the RISC-V scalar core to test and develop the VPU, instead it is used another core, the Avispado Core.
+In Figure %insert figure
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+it is possible to see how it is connected to the VPU.\\
+
+The instructions are issue with a credit system, which number corresponds to the  depth of the issue queue of the VPU.\\
+
+The handshake and the interface will be discussed later on when considering mostly the VPU side.
+
+
+
 \subsection{The VPU}
 In Figure \ref{VPU} it is possible to find a simplified scheme of the implemented VPU.\\
 
@@ -221,8 +232,10 @@ In Figure \ref{VPU} it is possible to find a simplified scheme of the implemente
     \caption{EPI project's VPU}
     \label{VPU}
 \end{figure}
+It is important to notice the VPU implemented is able to work in an out-of-order way. This means the instructions can be executed not in order and then committed in order.\\
 
-The main elementes are:
+
+The main elements componing the VPU are:
 \begin{itemize}
     \item \textbf{Renaming Unit}: the scope of this unit is to remove false dependeces due to the naming of the registers. This is possible because of the virtual memory, so the processor only uses logical registers, but in this component they are mapped to physical registers using the FRL (Free Register List).\\
     Then this translation is tracked into the RAT (Register Alia Table) in this way the logical source register, reading the RAT, can refer to the physical register.\\
@@ -260,15 +273,115 @@ The main elementes are:
     \item \textbf{Lane Interconnection}: because the Lanes can be any value between 1 and 8 is important to have a system which can synchronize all of them. There are also some operations which require to use multiple lanes at once to perform the execution, so a bidirectional ring intercommunication is implemented between the lanes.
 \end{itemize}
 
+It is also important to know how the memory is organized in order to understand how some operations work.\\
 
-Let's focus now on the submodules on which the wprk of this thesis was done:\\
+The vectors are distributed into the different lanes. Indeed it is possible to say the Vector are sliced into the lanes, this means it is necessary an efficient organization in order to understand where put the right data.\\
 
-Load Buffer and Load Management Unit.
 
-\subsection{Submodules}
+According to the RISC-V V-extension, vector elements can have different sizes. The parameter that describes the size of an elemetn is the SEW (Standard Element Width). This is determined by the CSR (Control and Status Register) named vsew. The maximum supported SEW into the EPI project is 64 bits. Also the maximum VLEN is equal to 16384 bits, so 2kB.\\
 
-%description on LB and LMU mainly and on the checkers in generale
+Considering the constraint of at least 40 physical registers, the number of lanes is equal to 8.
+The number of elements a vector registers holds is given by VLEN/SEW, according to the Table \ref{sew-el}:
 
-\subsection{The UVM and the checkers}
-%%the all draw in to the wiki and the main description of every piece would be great.
 
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|}
+    \hline
+        \rowcolor[HTML]{C0C0C0} 
+        SEW & ELEMENTS \\ \hline
+        64  & 256      \\ \hline
+        32  & 512      \\ \hline
+        16  & 1024     \\ \hline
+        8   & 2048     \\ \hline
+    \end{tabular}
+    %\caption{Caption}
+    \label{sew-el}
+\end{table}
+
+In Figure %add memory figure
+it is possible to see the structure used for 64 and 32 bit as examples.
+Notice that the sub-banks are more than 1 only when the SEW is not 64.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+Let's focus now on the submodules on which the work of this thesis was done.
+
+
+
+
+\subsection{The UVM}
+As mentioned before, the UVM is the solution to the standardization problem of the verification. In fact it is is a transaction-level methodology (TLM) designed for testbench development. It is a class library that makes it easy to write configurable and reusable code \cite{verification-book-2018}.
+
+The testbenches created are designed to be reusable, in this way less code and more production is achieved.\\
+
+This is mainly obtained with the polymorphism. It means an object can be used to define a reusable class. In this way an object can be used as a super-class and other sub-classes can be done by that.\\
+
+It works following an hierarchy method, and every component can only operate with the components above it. In this way multiple subcomponents can be instantiated.\\
+
+\subsubsection{general UVM}
+In Figure %add UVM figure 
+it is possible to see an example of a standard UVM.
+
+Let's now analyze some elements of a standard UVM and its implementations in the EPI project.
+
+\begin{itemize}
+    \item \textbf{Testbench}: typically it instantiates the DUT (Design Under Test) and the UVM Test Class. Also it is responsible to configure the connections between them.\\
+    There are different ways to communicate into an UVM and in this module is possible to choose them.\\
+    It is also important to say the Testbench instantiates the Test dynamically at run-time, in this way it possible to compile it once and run many Tests.
+    
+    \item \textbf{Test}: this is the top-level component into an UVM testbench.\\
+    Typically a base test class is defined to instantiate the top-level environment and then it is extended to the specific case.
+    
+    \item \textbf{Environment}: it is a component that defines the environment of a test. This means to define all the agents and the scoreboards. 
+    The top-level environment instantiates and configures the reusable verification IP and defines its default configurations based on the application of the test.\\
+    
+    Typically there is different environment for each interface of the DUT.
+    
+    \item \textbf{Sequence Item}: it is the fundamental lowest denominator object in the UVM hierarchy. It can be defined also as a transaction and is the smalles data transfer tha can exist in a UVM. It can inclued variables and constraints.\\
+    
+    It doesn't work with bits or those kind of astractions useful only when working with the DUT.
+    
+    \item \textbf{Sequence}: it is generated by the environment using the sequence item. It is an ordered collection of transactions.\\
+    Mostly it can impose some contraint to the variables generated into the sequence item.
+    
+    \item \textbf{Agent}: it is one of the most important components of the UVM. It groups toghether a the components that are dealing with the DUT and so a specific DUT interface.\\
+    Normally there is a different agent for every interface or DUT. This allows specific sequencers for specific stimulus.\\
+    It can also be active or passive depending on its action on the DUT: if it sends signal to stimulate the DUT it is considered active, and otherwise passive.
+    
+    It contains:
+    \begin{itemize}
+        \item \textbf{Driver}: it is the component in charge to communicate between the UVM and the DUT at pinlevel. It receives the sequences from the sequencer and then converts them into signals, following the interface protocol.\\
+        This action is observed by another component, the (command) monitor.
+        It could monitor the data by itself by this would violate the modularity choices for the UVM.\\
+        
+        It can be turned off when the agent is defined as passive. In this way there is no other component sending signals to the DUT.
+
+        
+         \item \textbf{Sequencer}: it controls the requests and the responses between the driver and the sequence item. So it is a controller.
+         
+        \item \textbf{Monitor}: it controls the outputs of the DUT at pinlevel. Then transforms those signals into transactions for the analisys.\\
+        It is also possible those transactions are then compared with the expected outputs. This is normally done in the scoreboard.\\
+        It can perform interally some processing. 
+
+        
+    \end{itemize}
+    
+    \item \textbf{Scoreboard}: it is a checker for the outputs of the DUT. It compares the transactions obtained by the monitors against a predicted result.\\
+    There are different ways to generate a predicted result and so a scoreboard, it often uses a C/C++ model, but it is possible to use also other languages.
+    
+\end{itemize}
+
+
+It is important to point the UVM works in different phases.\\
+It is possible to macro-divide the process in 3 phases: the \textit{build phase}: here the components are constructed from the top; the \textit{connect phase}: here all the components are connected upwards; and the \textit{run phase}: in this phase the simulation is ran.
+
+In Figure %phases 
+it is illustrated a simple scheme representing all the phases.
+
+
+\subsubsection{main UVM}
+%victor UVM
+%spike
+
+\subsubsection{submodules UVM}
+%why submodules

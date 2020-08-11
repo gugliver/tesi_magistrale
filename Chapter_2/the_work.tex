@@ -1,9 +1,80 @@
 \chapter{Contributions}
-\section{Load Submodules and Specifications}
+\section{Submodules and Specifications}
+%%talk about the specs
+
+
+The main focus of this thesis will be on 2 important submodules in charge of their load instructions:\\
+
+Load Buffer and Load Management Unit.
+
+\subsection{Load Management Unit}
+%general
+
+
+This module is in charge of handling the load operations.
+Those can be strided or indexed.\\
+
+Since the VPU is able to work out-of-order an ID system is necessary, so each instructions comes with an ID. In particular the load operation come with the signal \textbf{seq\_id\_i}.
+This signal contains all the informations about the issued load.\\
+
+The main elements of this submodules are:
+\begin{itemize}
+    \item \textit{Shifter}: it is useful to have the first bit not in the MSB or LSB position.
+    
+    \item \textit{Compactor}: it is useful to compact all the valid elements. When the stride = 1 there is no use of the compactor.
+    
+    \item \textit{Aligner}: it is in charge to align the elements for the output (lane, bank and sub-bank).
+\end{itemize}
+
+\bigskip
+
+%params
+The main parameters defining this submodule are:
+\begin{itemize}
+    \item \textbf{MEM\_DATA\_WIDTH}: width of the chunk of data received from Avispado. The standard value is \textit{512}.
+    
+    \item \textbf{SEQ\_ID\_WIDTH}: width of the \textit{seq\_id\_i} that identifies the data coming from Avispado. The standard value is \textit{33}.
+    
+    \item \textbf{MAX\_NUMBER\_ELEMENTS}: maximum number of elements that can be encoded in the chunk of data received (64 when SEW=8b). The standard value is \textit{64}.
+    
+    \item \textbf{MAVISPADO\_LOAD\_MASK\_WIDTH}: Indicates the maximum number of mask bits that are received with the data. Every bit of the mask represent a byte into the data. The standard value is \textit{64}.
+    
+    \item \textbf{NUM\_LANES}: number of lanes. The standard value is \textit{8}.
+\end{itemize}
+
+
+%interface
+%%%%%%%%%%%%%%%%TABLE%%%%%%%%%%%%%%%%%%%%%%%
+
+
+
+%%%%to change
+Aditionally, any load operation can be masked or unmasked.
+
+Since the memory system is not guaranteeing the in-order arrival of elements, a sequence ID containing the following information is sent alongside the data in order to identify each valid element and perform the reordering in case it is needed before sending the elements to the lanes and their corresponding Load Buffers.
+
+Virtual register: identifies the logical vector register to which the data should be written to.
+
+Element ID: element id of the first valid element contained in the chunk of data being transmitted.
+
+Element offset: identifies the position of the first valid element, and it is calculated according to the current SEW.
+
+Element count: indicates the number of valid elements being transmitted, bearing in mind that masked elements are also valid elements.
+
+Scoreboard ID: scoreboard ID of the load instruction that requested the data.
+
+
+
+
+
+%description on LB and LMU mainly and on the checkers in generale
+
+
+\subsection{Load Buffer}
 
 \section{Verification Plan}
 \subsection{Test Plan}
 \subsection{Functional Verification}
 
-\section{Formal Veirification}
+\section{Formal Verification}
 
