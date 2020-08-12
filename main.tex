@@ -11,10 +11,11 @@
 ]{toptesi}
 
 %\english
-
+\usepackage{relsize}        %resize used for the "_" character
 \usepackage[utf8]{inputenc}% codifica d'entrata
 \usepackage[T1]{fontenc}%    codifica dei font
 \usepackage{lmodern}%        scelta dei font
+
 
 \usepackage[table,xcdraw]{xcolor} %colori per intrerno tabelle e altro
 
@@ -33,7 +34,7 @@
   }
 
 \ExtendCaptions{english}{Abstract}{Acknowledgements}
-
+\newcommand{\+}{\textscale{.5}{\textunderscore}}
 
 \begin{document}\errorcontextlines=9
 \english

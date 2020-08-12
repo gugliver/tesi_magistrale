@@ -1,0 +1,17 @@
+{signal: [
+  {name: 'clk_i', wave: 'p..........|..........|'},
+  {name: 'load_granted_i' , wave: '0.10.10....|...10.....|' },
+  {name: 'load_grandted_sb_id_i', wave: 'xx2xx2x....|...2x.....|', data: ["0", "1", "2"]  },
+  {name: 'sew_i' , wave: 'xx2xx2x....|...2x.....|' , data: ["00", "11", "01"] },
+  {name: 'stride_i' , wave: 'xx2xx2x....|...2x.....|',  data: ["1", "1", "1"] },
+  {name: 'load_data_valid_i' , wave: '0.......10.|10....10..|' },
+  {name: 'load_data_i' , wave: 'x.......2x.|2x....2x..|', data: ["A", "Z", "B", "data"] },
+  {name: 'seq_id_i[29:32]' , wave: 'xx......2xx|2x....2x..|', data: ["0", "0", "1", "data"] },
+  {name: 'load_dvalid_o' , wave: '0........10|.10....10.|' },
+  {name: 'load_data_o' , wave: 'x........2x|.2x....2x.|',  data: ["A", "Z", "B", "data"] },
+  {name: 'sb_id_o' , wave: 'xxxxxxxxx2x|.2x....2x.|', data: ["0", "0", "1", "data"] },
+  
+  
+  
+],
+  config: { hscale: 1 }}
