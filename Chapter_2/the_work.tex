@@ -226,6 +226,22 @@ To define the approach to have also means to define the tools to use, in fact di
     
 \end{itemize}
 \subsection{Test Plan}
+To have a good coverage of the cases, and to have good reports to find bugs, it is very important to have a test plan.\\
+
+The test plan defines all the different cases to test for a submodule or for the entire VPU. This means try to find all the different corner cases stimulating the DUT.\\
+
+If there is the possibility a good test plan only includes different sets of stimulus, in this way an easy implementation is possible. Not in every case is in this way. For example in a submodule of the VPU not every case could be tested only modifying the inputs from the scalar core.\\
+This means sometimes it is necessary to create some modified settings, to create the correct environment for the test.\\
+
+It was created a test plan to stress the load operations. Those are affecting a lot of part of the VPU, but the focus will be on the Load Buffer, mainly.\\
+
+\subsubsection{test on consecutive elements}
+
+\subsubsection{test on random values}
+
+\subsubsection{test on splitted elements}
+
+\subsubsection{test on retries}
 
 \section{Functional Verification}
 
