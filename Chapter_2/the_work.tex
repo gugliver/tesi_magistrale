@@ -356,8 +356,8 @@ endfunction
 Using the element\+id and the corresponding bank (based on the sew), it is possible to predict the result for a specific location and compare it. In this pseudo code it is not very visible the time handling, but the if statement can wait until the result goes as output.
 
 
-\subsection{Assertions}
-The other powerful tool are the Assertions.\\
+\subsection{Checkers}
+A checker can be composed of many tools, they main one are the Assertions.\\
 
 An assertion is a simple check on a defined functionality. It is wanted to receive an error when an assertion fails.\\
 It is mainly composed by two parts both of them conditions, but they act differently and are time related. The first part is a condition to \textit{"fire"} it, this means when the condition is true the assertions starts checking for the second part.\cite{verification-book-2016}\\
@@ -367,7 +367,10 @@ The second part is another check on some condition, and can reveal the result of
 Both of them can be time consuming, and conditions on the edge are possible.\\
 It is also possible to embed \textit{properties} and \textit{sequences} into them, in this way  a combination of all the functionality is achievable.\\
 
+To connect them to the whole structure it was used the binding method, basically when a file containing the checker is created is then compiled with a bind option to connect it to a RTL file. In this way the files can be separated and the design and verification teams can work together on different files.\\
+
 Let's now see the default structure of an assertion.
+\bigskip
 
 \begin{lstlisting}[language=Verilog,style=verilog-style]
 
@@ -393,8 +396,7 @@ The main focus was on the calculated result and on the handshake with the other 
 
 In the verification plan were previously defined all the functionality to check, then a list of assertions was used to produce a good checker.\\
 
-%%controlla appendice
-The list of all the checkers can be found in Appendix B.\\
+The list of all the checkers can be found in Appendix.\\
 
 \begin{table}[H]
     \centering
@@ -403,7 +405,7 @@ The list of all the checkers can be found in Appendix B.\\
     
     \hline
     
-   \textbf{name} & \textbf{functionality} \\ \hline
+   \cellcolor{gray} \textbf{name} & \cellcolor{gray} \textbf{functionality} \\ \hline
    
    \hline
    
@@ -441,11 +443,11 @@ The list of all the checkers can be found in Appendix B.\\
 
 \tlazzu a\+sb\+correct & when load\+dvalid\+i, \\\tlazzu & if it is given a sb\+id not present in the fifo,\\\tlazzu &  load\+dvalid\+o will be 0 \\\hline
 
-\tazzu data\+o & correct load\+data\+o, \\\tazzu & clk cycle after load\+dvalid\+i (stride/mask/indx)\\\hline
+\tazzu a\+data\+o & correct load\+data\+o, \\\tazzu & clk cycle after load\+dvalid\+i (stride/mask/indx)\\\hline
 
-\tlazzu mask\+o & correct mask\+o, according to load\+data\+o\\\hline
+\tlazzu a\+mask\+o & correct mask\+o, according to load\+data\+o\\\hline
 
-\tazzu el\+ids\+o & correct element\+ids\+o\\\hline
+\tazzu a\+el\+ids\+o & correct element\+ids\+o\\\hline
 
 \tlazzu a\+min\+el\+id\+idx\+o & correct min\+el\+id\+idx\+o\\\hline
 
@@ -459,12 +461,169 @@ The list of all the checkers can be found in Appendix B.\\
     \label{tab_lmu_check}
 \end{table}
 
-As it is possible to see in Table \ref{tab_lmu_check} there are different assertions possible for a single submodule. Here they are separated by colour distinguishing the different "category". Indeed the orange ones are checking the basic signals behaviour and also the handshakes.\\
+As it is possible to see in Table \ref{tab_lmu_check} there are different assertions possible for a single submodule. 
+Here they are separated by colour distinguishing the different "category".
+Indeed the orange ones are checking the basic signals behaviour and the handshakes.\\
+An example is \textbf{a\+dvalid\+o}:
+\bigskip
+
+\begin{lstlisting}[language=Verilog,style=verilog-style]
+property p_dvalid_o;
+	@(posedge clk_i)
+	load_data_valid_i && sb_correct |-> ##1 load_dvalid_o ;
+endproperty : p_dvalid_o
+
+
+
+a_dvalid_o : assert property( disable iff(!rsn_i || kill_i) p_dvalid_o ) 
+        else $error('LMU did not compute any output');
+
+\end{lstlisting}
+\bigskip
+\begin{itemize}
+    \item \textbf{load\+data\+valid\+i} is the input necessary to fire the assertion;
+    
+    \item \textbf{sb\+correct} is the result of a task, that calculates if the scoreboard\+id is a valid one;
+    
+    \item \textbf{| - >} is the separation between the firing condition and the checking one. It is not time consuming (the time consuming version would be | = >);
+    
+    \item \textbf{\#\#1} command refers to 1 \textit{clock cycle(s)} delay;
+    
+    \item \textbf{load\+dvalid\+o} asserted is the expected output.
+\end{itemize}
+
 The light blue ones are scoreboard-like assertions, indeed are checking the scoreboard\+id, the data in output and also the masks.\\
-The yellow ones are just checking the conditions for the reset and the expected output.\\
+They use the results of the tasks to check the values, it is possible to see an example in \textbf{a\+el\+ids\+o} is possible to see how an assertion uses the result of a task.
+\bigskip
+
+\begin{lstlisting}[language=Verilog,style=verilog-style]
+//task
+task compute_ids(int unsigned SEW, int unsigned EL_COUNT, 
+	    int unsigned EL_ID, int unsigned N_ELEMENTS);
+
+    int unsigned f_v_e, i, j;
+		
+    // f_v_e is the index of the first 11-bit-element 
+    // of computed_el_id_o where we have to put an EL_ID
+	f_v_e = EL_ID % N_ELEMENTS; // find the first valid element 
+	f_v_e = f_v_e * SEW / 8 ; // multiply it by the number of bytes per element
+		
+	// initialize to 0
+	for(j=0;j<MAX_NUMBER_ELEMENTS;j++) begin
+	    computed_el_id_o[j] = '0;
+	end
+
+	for(j=0;j<EL_COUNT;j++) begin
+		for(i=0;i<SEW/8;i++) begin
+			computed_el_id_o[(f_v_e+i+(j*SEW/8))%MAX_NUMBER_ELEMENTS] = EL_ID+j;
+		end
+	end
+
+endtask : compute_ids
+
+// property
+property p_el_ids_o;
+	bit [MAX_NUMBER_ELEMENTS-1:0][EL_ID_WIDTH-1:0] buffer_ids;
+	@(posedge clk_i)
+	(load_data_valid_i  && sb_correct, buffer_ids = computed_el_id_o)|-> 
+        ##1 element_ids_o == buffer_ids;
+endproperty : p_el_ids_o
+
+//assertion
+a_el_ids_o : assert property( disable iff(!rsn_i || kill_i) p_el_ids_o ) 
+        else $error('mismatch in element_ids_o');
+\end{lstlisting}
+\bigskip
+
+It is possible to see the property using the value \textit{computed\+el\+id\+o}, a global variable. It is important to say the task compute\+ids is not called by the property but from another external process not displayed here.\\
+
+Finally the yellow ones are just checking the conditions for the reset and the expected output.\\
+
+It is also important to notice, some of those \textit{are not assertions}, but \textit{assumptions}. This means are conditions on the input and not on the outputs. There is no difference for the Functional Verification, but there will be for the Formal one. This will be better explained later on this Chapter.\\
 
 
 
 \subsubsection{Load Buffer's assertions}
+A similar approach was adopted for the Load Buffer. Having a lot of interfaces the LB has also a lot of handshakes, and so assertions. For this in the Table \ref{tab_lb_check} are reported some categories containing all the assertions for an interface.\\
+
+%%TODO finish the table
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|l|l|}
+    \hline
+    
+    \hline
+    
+    \cellcolor{gray} \textbf{name} & \cellcolor{gray} \textbf{functionality} \\ \hline
+   
+    \hline
+   
+    \textbf{AVISPADO IF} \\ \hline
+   
+    \hline
+a\+mem\+sync\+end\+i & When mem\+sync\+end\+i is high, \\ & there must be a known value for memop\+sb\+id\+i\\\hline
+
+a\+valid\+after\+sync\+end & for every memop\+sync\+end\+i (with a valid memop\+sb\+id\+i) \\ & there will be a load\+valid\+o (with correct load\+sb\+id\+o)\\\hline
+
+a\+memop\+sync\+end\+num & if num of memop\+sync\+end\+i = num of load\+ack\+i +2, \\ & then only memop\+sync\+end with \\ & a sb\+id different from the ones stored\\\hline
+
+a\+load\+ack\+i\+num & if the num of load\+ack\+i is in excess, \\ &  we assume this ack is for a different operation\\\hline
+
+a\+unique\+request & there can't be a request with the same sb\+id \\ &  of an inflight load\\\hline
+
+    \hline
+
+    \textbf{LMU INTERFACE}  \\ \hline
+   
+    \hline
+
+    \hline
+
+    \textbf{MQ INTERFACE}  \\ \hline
+   
+    \hline
+
+    \hline
+
+    \textbf{FSM INTERFACE}  \\ \hline
+   
+    \hline
+
+    \hline
+
+    \textbf{CU INTERFACE}  \\ \hline
+   
+    \hline
+
+    \hline
+
+    \textbf{VRF INTERFACE}  \\ \hline
+   
+    \hline
+
+    \hline
+
+    \textbf{VL INTERFACE}  \\ \hline
+   
+    \hline
+
+    \hline
+
+    \textbf{RSN INTERFACE}  \\ \hline
+   
+    \hline
+
+    \end{tabular}
+    \caption{Assertions on LB}
+    \label{tab_lb_check}
+\end{table}
+
+
+
+
+
+
+
+The assertions will be reported into the Appendix.\\
 \section{Formal Verification}
 
