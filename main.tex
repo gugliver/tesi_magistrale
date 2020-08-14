@@ -11,11 +11,16 @@
 ]{toptesi}
 
 %\english
-\usepackage{relsize}        %resize used for the "_" character
-\usepackage[utf8]{inputenc}% codifica d'entrata
-\usepackage[T1]{fontenc}%    codifica dei font
-\usepackage{lmodern}%        scelta dei font
+\usepackage{relsize}%           resize used for the "_" character
+\usepackage[utf8]{inputenc}%    codifica d'entrata
+\usepackage[T1]{fontenc}%       codifica dei font
+\usepackage{lmodern}%           scelta dei font
+\usepackage{setspace}%          interlinea
+{\fontfamily{lmdh}\selectfont
+}
+%\linespread{1.3}
 
+\usepackage{colortbl}
 
 \usepackage[table,xcdraw]{xcolor} %colori per intrerno tabelle e altro
 
@@ -32,6 +37,109 @@
     citecolor={blue},
     urlcolor={blue}
   }
+  
+%%DEFINING THE RULES FOR THE TABLES
+%%commands for the color of the table cells
+\definecolor{azz_palette}{RGB}{160,170,240}
+\definecolor{ora_palette}{RGB}{250,220,120}
+\definecolor{yel_palette}{RGB}{200,220,120}
+
+\definecolor{lazz_palette}{RGB}{190,200,255}
+\definecolor{lora_palette}{RGB}{255,240,170}
+\definecolor{lyel_palette}{RGB}{220,240,160}
+
+\newcommand{\tazzu}{\cellcolor{azz_palette}}
+\newcommand{\toran}{\cellcolor{ora_palette}}
+\newcommand{\tyell}{\cellcolor{yel_palette}}
+\newcommand{\tlazzu}{\cellcolor{lazz_palette}}
+\newcommand{\tloran}{\cellcolor{lora_palette}}
+\newcommand{\tlyell}{\cellcolor{lyel_palette}}
+%\newcommand{\hcyan}[1]{{\color{teal} #1}}
+  
+\usepackage{listings}
+%% DEFINING THE RULES FOR THE CODE
+\definecolor{vgreen}{RGB}{23,114,69}
+\definecolor{vblue}{RGB}{1,127,255}
+
+\definecolor{vorange}{RGB}{255,143,102}
+\definecolor{vlightblue}{RGB}{173,216,230}
+\lstdefinestyle{verilog-style}
+{
+    language=Verilog,
+    basicstyle=\scriptsize\ttfamily,
+    keywordstyle=\bfseries\color{vgreen},
+    identifierstyle=\color{black},
+    commentstyle=\color{vblue},
+    numbers=left,
+    numberstyle=\tiny\color{black},
+    numbersep=10pt,
+    tabsize=8,
+    moredelim=*[s][\color{black}]{[}{]},
+    literate=*{:}{:}1,
+    linewidth=.99\textwidth,
+    sensitive = true,
+  morekeywords = [1]{
+    %% SystemVerilog keywords
+    begin,
+    bit,
+    break,
+    case,
+    continue,
+    default,
+    do,
+    else,
+    end,
+    endcase,
+    function,
+    endfunction,
+    endinterface,
+    endmodule,
+    endpackage,
+    enum,
+    export,
+    extern,
+    for,
+    if,
+    import,
+    int,
+    interface,
+    local,
+    localparam,
+    matches,
+    module,
+    package,
+    tagged,
+    type,
+    typedef,
+    struct,
+    union,
+    void,
+    %% Bluespec keywords
+    property,
+    endproperty,
+    assert,
+    assume,
+    bind,
+    int,
+	task,
+	endtask,
+	function,
+	endfunction,
+	input,
+	output,
+	\$error,
+	\$fatal,
+	new
+  },
+}
+  
+  
+  
+  
+  
+ 
+  
+  
 
 \ExtendCaptions{english}{Abstract}{Acknowledgements}
 \newcommand{\+}{\textscale{.5}{\textunderscore}}
