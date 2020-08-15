@@ -87,7 +87,7 @@ It was designed for Supercomputing and the major feature was to have also a scal
 As it is possible to see in Figure \ref{Multithreading} with standard multithreading there will always be some empty thread along with the running ones. This lowes the efficiency.
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.43]{Chapter_1/img/threads.png}
+    \includegraphics[scale = 0.5]{Chapter_1/img/threads.png}
     \caption{Multithreading Processor Clock Time usage  \cite{L15-Krste}}
     \label{Multithreading}
 \end{figure}
@@ -100,14 +100,14 @@ The pipeline is represented in Figure \ref{Vector-Latency} and the final Clock T
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.55]{Chapter_1/img/lat-pen.png}
+    \includegraphics[scale = 0.5]{Chapter_1/img/lat-pen.png}
     \caption{Latency penalty on vector processing units \cite{L15-Krste}}
     \label{Vector-Latency}
 \end{figure}
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.4]{Chapter_1/img/time-usage.png}
+    \includegraphics[scale = 0.35]{Chapter_1/img/time-usage.png}
     \caption{Vector Processor Clock Time usage \cite{L15-Krste}}
     \label{Vectoring}
 \end{figure}
@@ -216,7 +216,7 @@ This structure is called \textit{UVM}, and it is formed by different classes use
 %%%%%%%%CHECK AVISPADO%%%%%%%%
 Before starting it is important to notice in this project it is not used the RISC-V scalar core to test and develop the VPU, instead it is used a simulator of it. The simulator is called Spike, and the core is called Avispado. Spike is also used for other tasks, so the Avispado simulation will always be called Avispado.\\
 In Figure \ref{avi-vpu} it is possible to see the interface between Avispado and the VPU for all the instructions.\\
-
+%%TODO correction to the palette
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.6]{Chapter_1/img/avi-vpu.png}
@@ -236,7 +236,7 @@ In Figure \ref{VPU} it is possible to find a simplified scheme of the implemente
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.4]{Chapter_1/img/VPU.png}
+    \includegraphics[scale = 0.5]{Chapter_1/img/VPU.png}
     \caption{EPI project's VPU}
     \label{VPU}
 \end{figure}
@@ -402,25 +402,38 @@ Let's now analyze some elements of a standard UVM and its implementations in the
 It is important to point the UVM works in different phases.\\
 It is possible to macro-divide the process in 3 phases: the \textit{build phase}: here the components are constructed from the top; the \textit{connect phase}: here all the components are connected upwards; and the \textit{run phase}: in this phase the simulation is ran.
 
-In Figure %phases 
-it is illustrated a simple scheme representing all the phases.\\
+In Figure \ref{phases-uvm} it is illustrated a simple scheme representing all the phases.\\
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{Chapter_1/img/phases-uvm.png}
+    \caption{UVM phases}
+    \label{phases-uvm}
+\end{figure}
+
 
 In this project two different UVMs were implemented. One to test of all the VPU and another one to test the submodules. This approach was chosen because it is not always obvious where a bug found is located.
 
 Let's now analyze briefly those two structures.
 \subsubsection{Main UVM}
-The main UVM is interfaced with Avispado and it is composed followind the standard structure. It was mainly used to support the use of a scoreboard (Spike) and to implement then some checkers and some coverage controls.\\
+The main UVM is interfaced with Avispado and it is composed following the standard structure. It was mainly used to support the use of a scoreboard (Spike) and to implement then some checkers and some coverage controls.\\
 
-Tha majority of the automatic tests are made with this structure, and they are scripted to run all the night and to produce a valid dataset to then find and fix the bugs.\\
+The majority of the automatic tests are made with this structure, and they are scripted to run all the night and to produce a valid dataset to then find and fix the bugs.\\
 
-Using a simulator for Avispado as input, the driver is a little bit different from a standard one. Indeed the input are not controlled at pinlevel but vector instructions are sended to the core, which will then produce a correct input for the VPU.\\
+Using a simulator for Avispado as input, the driver is a little bit different from a standard one. Indeed the input are not controlled at pinlevel but vector instructions are sent to the core, which will then produce a correct input for the VPU.\\
 
 Those instructions are then compared with with the scoreboard and a result is produced.
 
-In Figure 
-%victor UVM
-%spike
-it is possible to observe the whole procedure for a test.
+In Figure \ref{bin-to-log}it is possible to observe the whole procedure for a test.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{Chapter_1/img/bin-to-log.png}
+    \caption{Simulation path}
+    \label{bin-to-log}
+\end{figure}
+
 
 
 
@@ -428,6 +441,15 @@ it is possible to observe the whole procedure for a test.
 
 Another structure was necessary due to the different interface, and so different drivers. It is not always trivial to create a driver for a submodule, because the handshake processes can be very complex, and so it would be possible to introduce some error in the verification structure.\\
 
-In this case this structure was used only for one submodule, and for the pther one other techniques were implemented.\\
+In this case this structure was used only for one submodule, and for the other one other techniques were implemented.\\
 
-The structure of this UVM will be studied later on the \textit{Contributions} Chapter, along with the submodules descriptions.
+The structure of this UVM is represented in figure \ref{sub-uvm}. It was used mostly to handle the checkers and the drivers.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{Chapter_1/img/sub-uvm.png}
+    \caption{A small UVM for the submodules}
+    \label{sub-uvm}
+\end{figure}
+
+It is possible to observe the scoreboard and the coverage are disabled in this application. In reality a scoreboard was implemented for each of them, but was handles with a different methodology discussed later on the next Chapter.

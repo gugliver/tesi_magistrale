@@ -166,16 +166,34 @@ The LMU receives full cache lines of 512 bits from Avispado and forwards them to
 Up to 2 loads can arrive, but they can come out-of-order, although the implementation will be parameterized to accept N loads in flight.
 \subsubsection{Interface}
 %%tables????
+%%TODO
 
 \subsubsection{Structure}
 There is a Load Buffer of each lane and there are 3 layers to buffer the elements. The layers are divided by the concept of Element Group. In fact the elements cannot be disposed in every combination, but every element, based on its element ID, has an exact location (based also on the sew).\\
-%elements 64 e 32
 
-In Figure there is an example for the disposition of the elements for 64 bit or 32 bit. It is also important to say the number of bit for each element group stays the same, this means the number of element depends on the sew.\\
+In Figure \ref{gen-ex} it is possible to see a general connection between the LMU and the various Load Buffers.\\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{Chapter_2/img/cache-to-lb-gen-ex.png}
+    \caption{Data through the LB}
+    \label{gen-ex}
+\end{figure}
+
+
+In Figure \ref{lb-genz} there is an example for the disposition of the elements of 64 bit. It is also important to say the number of bit for each element group stays the same, this means the number of element depends on the sew.\\
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.4]{Chapter_2/img/cache-to-lb-genz-ex.png}
+    \caption{General case for the LB}
+    \label{lb-genz}
+\end{figure}
 
 The layers of the LB are composed mainly of 4 parts:
 \begin{itemize}
-    \item Elements: the elements in the buffer;
+    \item Elements: the elements in the buffer, they are always 512 bit, so 5 elements with sew = 64, 10 elements with sew =32 and so on;
     
     \item Identifier: identifies the elements coming from the young or the old load;
     
@@ -207,6 +225,7 @@ There are 4 possible cases:
 
 \subsubsection{Flow}
 In figure 
+%%TODO
 %schema flow
 it is possible to see a simple scheme of the LB's behaviour.
 %describe the flow
@@ -240,16 +259,38 @@ It was created a test plan to stress the load operations. Those are affecting a 
 The first test planned was a simple test about consecutive elements, this means all the elements are sent in order. Of course this is a simple case, and it is thought to test if all the chain to the effective load are working. In fact it is a control test.\\
 
 The only constraint meant to be in this test is the sequentiality of the elements.\\
-An example could be the one represented in the Diagram %diagramma 0,1,2,3,4,5,6,7 con sew 64, load 0
+An example could be the one represented in Figure \ref{cache-to-lb-seq-ex}.
+
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-seq-ex.png}
+    \caption{Sequential inputs from avispado}
+    \label{cache-to-lb-seq-ex}
+\end{figure}
 
 \subsubsection{test on random values}
 The second kind of test to implement is for sure the random test. This will stress the ability to use different elements ID and different loads at the same time. In this way all the handling for the positions, calculated based on the load and on the element ID, is stressed.\\
 
 It was created a special modality to constrain the randomness to the possible values. This was implemented in the UVM using the configurations for the sequence.\\
 
-An example could be the one represented in the Diagram %diagramma 0,3,4,10,14,7,1,13  con sew 64, load 0
-%
-%oppure 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6, 6, 7, 7
+An example on random inputs from the same load could be the one represented in Figure \ref{cache-to-lb-rnd-ex}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-rnd-ex.png}
+    \caption{Random inputs from avispado}
+    \label{cache-to-lb-rnd-ex}
+\end{figure}
+
+It is also possible to have inputs from two loads, as in Figure \ref{cache-to-lb-ooo-ex}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-ooo-ex.png}
+    \caption{Random inputs from two loads}
+    \label{cache-to-lb-ooo-ex}
+\end{figure}
 
 \subsubsection{test on splitted elements} 
 A very interesting case is revealed when studying the positions.\\
@@ -257,14 +298,40 @@ Let's take into account a line of elements sent by the LMU to the Load Buffer. I
 
 The data sent will be sequential starting from 65 to 80. In this way it is possible to test if the output is disposed correctly and so if the Load Buffer for the Lane[0] store 80-65 as values.\\
 
-An example could be the one represented in the Diagram %diagramma 
+An example could be the one represented in Figure \ref{cache-to-lb-split-ex}. It also shows how the input is splitted in the LB.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-split-ex.png}
+    \caption{Input splitted into the LB}
+    \label{cache-to-lb-split-ex}
+\end{figure}
 
 \subsubsection{test on retries}
 The last test typology is about the retry mechanism. This occurs when all the tree lines are fulled with an element in the same position, and thena fourth elements arrives, this means the Load Buffer doesn't have another position for the element, thus one of the elements needs to go back to the sender and a new request is made.\\
 
 Considering sew = 64, there are different versions about this test: it can be a simple in order retry with elements 0-40-80-120-... as inputs, it can be out of order as 0-40-120-80-..., or it can be with two different loads.\\
 
-The easy example is represented in the Diagram %diagramma 
+The easy example is represented in Figure \ref{cache-to-lb-ret-ex}. 0-40-80 are already filling the spots where 120 will try to fit. So a retry is needed, discarding 120.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{Chapter_2/img/cache-to-lb-ret-ex.png}
+    \caption{Stimulated retry}
+    \label{cache-to-lb-ret-ex}
+\end{figure}
+
+
+The out-of-order example is represented in Figure \ref{cache-to-lb-ooo-ret-ex}. 0-40-120 are already filling the spots where 80 will try to fit. So a retry is needed, discarding 120, and taking 80.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{Chapter_2/img/cache-to-lb-ooo-ret-ex.png}
+    \caption{Stimulated retry with out-of-order values}
+    \label{cache-to-lb-ooo-ret-ex}
+\end{figure}
+
+
 
 \section{Functional Verification}
 The test executed are just the base for a verification. It can be defined Functional Verification the process to verify a design agaist its specifications.\\
@@ -546,7 +613,7 @@ It is also important to notice, some of those \textit{are not assertions}, but \
 \subsubsection{Load Buffer's assertions}
 A similar approach was adopted for the Load Buffer. Having a lot of interfaces the LB has also a lot of handshakes, and so assertions. For this in the Table \ref{tab_lb_check} are reported some categories containing all the assertions for an interface.\\
 
-%%TODO finish the table
+%%TODO color the table
 \begin{table}[H]
     \centering
     \begin{tabular}{|l|l|}
@@ -561,7 +628,7 @@ A similar approach was adopted for the Load Buffer. Having a lot of interfaces t
     \textbf{AVISPADO IF} \\ \hline
    
     \hline
-a\+mem\+sync\+end\+i & When mem\+sync\+end\+i is high, \\ & there must be a known value for memop\+sb\+id\+i\\\hline
+a\+mem\+sync\+end\+i & if mem\+sync\+end\+i is high, \\ & memop\+sb\+id\+i must be a known value \\\hline
 
 a\+valid\+after\+sync\+end & for every memop\+sync\+end\+i (with a valid memop\+sb\+id\+i) \\ & there will be a load\+valid\+o (with correct load\+sb\+id\+o)\\\hline
 
@@ -573,43 +640,49 @@ a\+unique\+request & there can't be a request with the same sb\+id \\ &  of an i
 
     \hline
 
-    \textbf{LMU INTERFACE}  \\ \hline
+    \textbf{LMU INTERFACE} & \\ \hline
    
     \hline
 
     \hline
 
-    \textbf{MQ INTERFACE}  \\ \hline
+    \textbf{MQ INTERFACE} & \\ \hline
    
     \hline
 
     \hline
 
-    \textbf{FSM INTERFACE}  \\ \hline
+    \textbf{FSM INTERFACE} & \\ \hline
    
     \hline
 
     \hline
 
-    \textbf{CU INTERFACE}  \\ \hline
+    \textbf{CU INTERFACE} & \\ \hline
    
     \hline
 
     \hline
 
-    \textbf{VRF INTERFACE}  \\ \hline
+    \textbf{VRF INTERFACE} & \\ \hline
+   
+    \hline
+    
+    a\+load\+inflight & load\+inflight\+o is checked, \\ & it can be 1 when the number of load inflight is 1 or 2 and \\ & it can be 0 otherwise \\ \hline
+    
+    a\+load\+ready\+o & when load\+inflight\+o = 1 and lmu\+dvalid\+load\+i = 1, \\ & if there is fsm\+read\+en\+lbuf\+i, \\ & the next clock cycle there is load\+ready\+o = 1 \\ \hline
+    
+    a\+data\+corruption & check that each element that enter \\ & will eventually exit in correct position \\ \hline
+
+    \hline
+
+    \textbf{VL INTERFACE}  & \\ \hline
    
     \hline
 
     \hline
 
-    \textbf{VL INTERFACE}  \\ \hline
-   
-    \hline
-
-    \hline
-
-    \textbf{RSN INTERFACE}  \\ \hline
+    \textbf{RSN INTERFACE} & \\ \hline
    
     \hline
 
@@ -618,12 +691,153 @@ a\+unique\+request & there can't be a request with the same sb\+id \\ &  of an i
     \label{tab_lb_check}
 \end{table}
 
+A good example for the handshake is \textbf{a\+mem\+sync\+end\+i}. This is an assumption on the inputs, but will be treated as an assertion.\\
+\begin{lstlisting}[language=Verilog,style=verilog-style]
+property p_mem_sync_end_i;
+	@(posedge clk_i)
+	memop_sync_end_i |-> !$isunknown(memop_sb_id_i);
+endproperty : p_mem_sync_end_i
 
 
+a_mem_sync_end_i : assume property (disable iff (!rsn_i || kill_i) p_mem_sync_end_i) 
+        else $error('unknown memop scoreboard id on memop_sync_end_i asserted');
 
 
+\end{lstlisting}
 
 
+The property is using the system function \textbf{\emph{\$isunknown}}, this function return if the value passed is unknown ('\emph{X}' or '\emph{Z}'). So basically when \textbf{\emph{memop\+sync\+end\+i}} is asserted, it must be known the value of its scoreboard id.\\
+
+
+Then  \textbf{a\+data\+corruption} is the scoreboard like discussed before, and finally there are the reset's ones.\\
 The assertions will be reported into the Appendix.\\
-\section{Formal Verification}
 
+
+
+
+\subsection{Drivers}
+The other tool used to test the submodules is the4 Driver. It is a file that defines the stimuli and their order. A very defined order of them defines an operation. So it is possible to create the situation in which the DUT will work.\\
+
+It is important to notice the drive only is enabled when the UVM is configured as ACTIVE.
+
+\subsubsection{Load Management Unit}
+This is the only submodule on which was developed a driver, due to the reduced complexity. In fact the drive can be very complex when different handshakes come in.\\
+
+In the next page it is possible to see one of the operations implemented into the driver. The other ones can be found in the Appendix.
+\newpage
+
+\begin{lstlisting}[language=Verilog,style=verilog-style]
+if(command.op == gnt_op) begin
+    // randomizations
+    SEW = command.sew_i;
+    SEW = (2**(3+SEW))/8; // in number of bytes , for the stride in bytes
+    randomize(command.stride_i) 
+        with {command.stride_i inside{1*SEW,2*SEW,4*SEW,-1*SEW,-2*SEW,-4*SEW,
+        command.n*SEW};};
+
+    randomize(command.load_granted_sb_id_i) 
+        with{!(command.load_granted_sb_id_i inside
+        {fifo[0].sb_id, fifo[1].sb_id});};
+
+    // check how many inflight load
+    if ( !fifo[0].done && !fifo[1].done ) begin
+	    @(posedge lmu_if.clk_i) ;
+	    lmu_if.load_data_valid_i = 0;
+	    lmu_if.load_sync_end_i=1;
+	    lmu_if.load_sync_end_sb_id_i=fifo[command.which_load].sb_id;	
+	    fifo[command.which_load].done = 1;
+    end 
+
+    // driving
+    @(posedge lmu_if.clk_i);
+    lmu_if.load_sync_end_i=0;
+    lmu_if.load_sync_end_sb_id_i='0;
+    @(posedge lmu_if.clk_i);
+    lmu_if.load_sync_end_i=0;
+    lmu_if.load_sync_end_sb_id_i='0;
+    lmu_if.op = gnt_op;
+    lmu_if.rsn_i = 1'b1;
+    lmu_if.kill_i = 1'b0;
+    lmu_if.load_granted_i = 1;
+    lmu_if.indexed_load_granted_i = command.indexed_load_granted_i;
+    lmu_if.load_granted_sb_id_i= command.load_granted_sb_id_i;
+    lmu_if.load_data_valid_i = 0;
+    lmu_if.load_data_i = '0;
+    lmu_if.seq_id_i = '0;
+    lmu_if.mask_valid_i = 1'b0;
+    lmu_if.mask_i = '0;
+    lmu_if.sew_i = command.sew_i;     
+    lmu_if.stride_i = command.stride_i;
+    // update the fifo
+    if ( fifo[1].done ) begin
+	    fifo[1].SEW = command.sew_i;
+	    fifo[1].STRIDE = command.stride_i;
+	    fifo[1].sb_id = command.load_granted_sb_id_i ;
+	    fifo[1].is_indexed = command.indexed_load_granted_i;
+	    fifo[1].done = 0;
+    end
+    else if( fifo[0].done ) begin
+	    fifo[0].SEW = command.sew_i;
+	    fifo[0].STRIDE = command.stride_i;
+	    fifo[0].sb_id = command.load_granted_sb_id_i;
+	    fifo[0].is_indexed = command.indexed_load_granted_i;
+	    fifo[0].done = 0;
+    end
+    @(posedge lmu_if.clk_i);
+    lmu_if.load_granted_i = 0;
+    -> lmu_if.new_input;
+end
+
+
+
+
+\end{lstlisting}
+\newpage
+
+
+The operation implemented is the granting of a load request. The code is mainly divided in three parts: 
+\begin{itemize}
+    \item the \emph{first} one makes some randomization for the data and the checks if the driver is following the assumptions about the inputs (in this case on the loads inflight);
+    
+    \item the \emph{second} part is the driving, all the inputs are well defined, and also some clock cycles need to be waited sometimes. All the value assigned with \textbf{\emph{command}} have been randomized, but constrained. to valid values;
+    
+    \item the \emph{third} part is just the updating of an internal fifo, useful to be in sync with the LMU and to not fail the assumptions.
+\end{itemize}  
+\bigskip
+
+
+
+
+
+
+\section{Formal Verification}
+As already mentioned, the assertions and the assumption are treated equally in the functional verification. This is not true anymore in the formal verification.\\
+
+The objective of formal veriﬁcation is to mathematically prove properties of a system, usually at design time\cite{verification-book-2018-formal}.\\
+The formal tool, in this project, was only used to prove mathematically the assertions and the assumptions, but there are other uses involving coverage and modeling.\\
+
+To be performed, the formal assertions verification, needs only to instantiate the RTL file and the checkers file. Then it uses the assumptions as drivers for the RTL, finally it tries to prove wrong the assertions using mathematical simplifications.\\
+
+Hence here it is possible to see how the assumptions are working differently. If a property is assumed it can never be proved wrong! Only assertions are to check.\\
+
+The tool used it 
+There are different possible outcomes:
+\begin{itemize}
+    \item \textbf{proof}: starting at the starting state, no legal stimulus exists that causes in the assertion to be violated. It is normally proven in the first 10-100 cycles;
+    
+    \item \textbf{firing}: a counterexample to the assertion exist, this means there is a bug in design, or the specifications are not well defined;
+    
+    \item \textbf{firing with warnings}: a counterexample to the assertion exist, but it uses not primary inputs. This means there are uncontrolled internal values that causes a fail;
+    
+    \item \textbf{inconclusive}: the formal analysis timed out before demonstrating the assertion. This could also means the complexity is too high to be elaborated with math tools; 
+    
+    \item \textbf{bounded proof}: exist a proof to the assertion but only to a certain depth;
+    
+    \item \textbf{vacuous proof}: the case is vacuously proven when the assertion is always true done the assumptions. This means probably there is some mistake into the assumptions or the assertions.
+\end{itemize}
+
+
+This kind of verification was very useful also in terms of documentation. In fact the material already prepared before the work of this thesis was lacking of some information and trying to test the DUTs formally helped finding blind spots on the specifications.\\
+Indeed the formal tools are a lot based on the assumptions and if only one assumption is missing then it is possible a lot of assertions are failing.\\
+
+Let's now move on to the the results of the functional and formal analysis.
