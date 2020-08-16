@@ -165,8 +165,16 @@ The LMU receives full cache lines of 512 bits from Avispado and forwards them to
 
 Up to 2 loads can arrive, but they can come out-of-order, although the implementation will be parameterized to accept N loads in flight.
 \subsubsection{Interface}
-%%tables????
-%%TODO
+The Load Buffer is connected with a lot of modules. From the \emph{Vector Lane} it receives the clock and the reset and communicates if there is a load inflight; with the \emph{LMU} it exchanges all the data; from \emph{Avispado} it knows if te operation has terminated; the request handshake is handled with the \emph{Memory Queue}; the data goes to the \emph{Vector Register File}, synchronizing via the internal \emph{Finite State Machine}; finally it can commit the result with the \emph{Commit Unit}.\\
+
+A simple structure is represented in Figure \ref{lb-if}.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.4]{Chapter_2/img/lb-if.png}
+    \caption{Load Buffer's interfaces}
+    \label{lb-if}
+\end{figure}
 
 \subsubsection{Structure}
 There is a Load Buffer of each lane and there are 3 layers to buffer the elements. The layers are divided by the concept of Element Group. In fact the elements cannot be disposed in every combination, but every element, based on its element ID, has an exact location (based also on the sew).\\
@@ -250,7 +258,7 @@ To have a good coverage of the cases, and to have good reports to find bugs, it 
 
 The test plan defines all the different cases to test for a submodule or for the entire VPU. This means try to find all the different corner cases stimulating the DUT.\\
 
-If there is the possibility a good test plan only includes different sets of stimulus, in this way an easy implementation is possible. Not in every case is in this way. For example in a submodule of the VPU not every case could be tested only modifying the inputs from the scalar core.\\
+If there is the possibility a good test plan only includes different sets of stimulus, in this way an easy implementation is possible. Not every case is in this way. For example in a submodule of the VPU not every case could be tested only modifying the inputs from the scalar core.\\
 This means sometimes it is necessary to create some modified settings, to create the correct environment for the test.\\
 
 It was created a test plan to stress the load operations. Those are affecting a lot of part of the VPU, but the focus will be on the Load Buffer, mainly.\\
@@ -345,8 +353,14 @@ Before the work of this thesis a scoreboard for the entire UVM was already imple
 
 \subsubsection{Spike}
 Spike is a RISC-V ISA Simulator and it implements a functional model of one or more RISC-V harts. For this specific project it was extended to support the vector extension.\\
-It is used first to simulate the Avispado core, then the result is feed to the VPU and to the Spike vector extension. Finally the results are compared. A simple scheme is represented in Figure %scheme spike.so
-\\
+It is used first to simulate the Avispado core, then the result is feed to the VPU and to the Spike vector extension. Finally the results are compared. A simple scheme is represented in Figure \ref{bin-to-log}. \\
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.5]{Chapter_2/img/bin-to-log.png}
+    \caption{Simulation path}
+    \label{bin-to-log}
+\end{figure}
 
 This kind of tool is very useful when running tests because it is faster than a specific test for each component the test is stressing, and at the same time can give hints about the working condition. Of course it is just a first step, because it will be hard to find a bug using only the comparison with the final result.\\
 
@@ -357,7 +371,7 @@ Recalling the LMU working model, it first takes into account the stride, reversi
 
 In high level it was done using vectors, and a couple of steps were merged together. It is possible to see below the pseudo code represntig the implementation in this way.
 
-\begin{lstlisting}[language=Verilog,style=verilog-style]
+\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
         x=new[N_ELEMENTS][SEW];
         y=new[N_ELEMENTS][SEW];
 
@@ -399,7 +413,7 @@ It was implemented as an assertion (whose behavior will be explained in the foll
 A pseudo version of this checker is represented below.
 \bigskip
 
-\begin{lstlisting}[language=Verilog,style=verilog-style]
+\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
 // Pseudo checker
 if( lmu_dvalid_load_i) { 
 
@@ -439,9 +453,7 @@ To connect them to the whole structure it was used the binding method, basically
 Let's now see the default structure of an assertion.
 \bigskip
 
-\begin{lstlisting}[language=Verilog,style=verilog-style]
-
-
+\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
 property property_1;
     @(posedge clk_i)
 	a |-> b;
@@ -472,7 +484,7 @@ The list of all the checkers can be found in Appendix.\\
     
     \hline
     
-   \cellcolor{gray} \textbf{name} & \cellcolor{gray} \textbf{functionality} \\ \hline
+   \lgray \textbf{name} & \lgray \textbf{functionality} \\ \hline
    
    \hline
    
@@ -520,8 +532,8 @@ The list of all the checkers can be found in Appendix.\\
 
 \hline
 
-\tyell a\+rsn\+o & when rsn\+i load\+dvalid\+o = 0 and mask\+o = '0 \\\hline
-\tlyell a\+rsn\+i & when rsn\+i load\+data\+valid\+i = 0 \\ \tlyell & and load\+granted\+i = 0 \\\hline
+\tyel a\+rsn\+o & when rsn\+i load\+dvalid\+o = 0 and mask\+o = '0 \\\hline
+\tlyel a\+rsn\+i & when rsn\+i load\+data\+valid\+i = 0 \\ \tlyel & and load\+granted\+i = 0 \\\hline
 
     \end{tabular}
     \caption{Assertions on LMU}
@@ -534,7 +546,7 @@ Indeed the orange ones are checking the basic signals behaviour and the handshak
 An example is \textbf{a\+dvalid\+o}:
 \bigskip
 
-\begin{lstlisting}[language=Verilog,style=verilog-style]
+\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
 property p_dvalid_o;
 	@(posedge clk_i)
 	load_data_valid_i && sb_correct |-> ##1 load_dvalid_o ;
@@ -561,9 +573,10 @@ a_dvalid_o : assert property( disable iff(!rsn_i || kill_i) p_dvalid_o )
 
 The light blue ones are scoreboard-like assertions, indeed are checking the scoreboard\+id, the data in output and also the masks.\\
 They use the results of the tasks to check the values, it is possible to see an example in \textbf{a\+el\+ids\+o} is possible to see how an assertion uses the result of a task.
-\bigskip
 
-\begin{lstlisting}[language=Verilog,style=verilog-style]
+\newpage
+
+\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
 //task
 task compute_ids(int unsigned SEW, int unsigned EL_COUNT, 
 	    int unsigned EL_ID, int unsigned N_ELEMENTS);
@@ -573,7 +586,7 @@ task compute_ids(int unsigned SEW, int unsigned EL_COUNT,
     // f_v_e is the index of the first 11-bit-element 
     // of computed_el_id_o where we have to put an EL_ID
 	f_v_e = EL_ID % N_ELEMENTS; // find the first valid element 
-	f_v_e = f_v_e * SEW / 8 ; // multiply it by the number of bytes per element
+	f_v_e = f_v_e * SEW / 8 ; // multiply it by the number of bytes per el
 		
 	// initialize to 0
 	for(j=0;j<MAX_NUMBER_ELEMENTS;j++) begin
@@ -582,7 +595,8 @@ task compute_ids(int unsigned SEW, int unsigned EL_COUNT,
 
 	for(j=0;j<EL_COUNT;j++) begin
 		for(i=0;i<SEW/8;i++) begin
-			computed_el_id_o[(f_v_e+i+(j*SEW/8))%MAX_NUMBER_ELEMENTS] = EL_ID+j;
+			computed_el_id_o[(f_v_e+i+(j*SEW/8))%MAX_NUMBER_ELEMENTS] 
+			    = EL_ID+j;
 		end
 	end
 
@@ -621,68 +635,68 @@ A similar approach was adopted for the Load Buffer. Having a lot of interfaces t
     
     \hline
     
-    \cellcolor{gray} \textbf{name} & \cellcolor{gray} \textbf{functionality} \\ \hline
+    \lgray \textbf{name} & \lgray \textbf{functionality} \\ \hline
    
     \hline
    
-    \textbf{AVISPADO IF} \\ \hline
+    \tazzu \textbf{AVISPADO IF} \\ \hline
    
     \hline
-a\+mem\+sync\+end\+i & if mem\+sync\+end\+i is high, \\ & memop\+sb\+id\+i must be a known value \\\hline
+\tlazzu a\+mem\+sync\+end\+i & if mem\+sync\+end\+i is high, \\\tlazzu & memop\+sb\+id\+i must be a known value \\\hline
 
-a\+valid\+after\+sync\+end & for every memop\+sync\+end\+i (with a valid memop\+sb\+id\+i) \\ & there will be a load\+valid\+o (with correct load\+sb\+id\+o)\\\hline
+\tlazzu a\+valid\+after\+sync\+end & for every memop\+sync\+end\+i (with a valid memop\+sb\+id\+i) \\\tlazzu & there will be a load\+valid\+o (with correct load\+sb\+id\+o)\\\hline
 
-a\+memop\+sync\+end\+num & if num of memop\+sync\+end\+i = num of load\+ack\+i +2, \\ & then only memop\+sync\+end with \\ & a sb\+id different from the ones stored\\\hline
+\tlazzu a\+memop\+sync\+end\+num & if num of memop\+sync\+end\+i = num of load\+ack\+i +2, \\\tlazzu  & then only memop\+sync\+end with \\\tlazzu & a sb\+id different from the ones stored\\\hline
 
-a\+load\+ack\+i\+num & if the num of load\+ack\+i is in excess, \\ &  we assume this ack is for a different operation\\\hline
+\tlazzu a\+load\+ack\+i\+num & if the num of load\+ack\+i is in excess, \\\tlazzu &  we assume this ack is for a different operation\\\hline
 
-a\+unique\+request & there can't be a request with the same sb\+id \\ &  of an inflight load\\\hline
-
-    \hline
-
-    \textbf{LMU INTERFACE} & \\ \hline
-   
-    \hline
+\tlazzu a\+unique\+request & there can't be a request with the same sb\+id \\\tlazzu &  of an inflight load\\\hline
 
     \hline
 
-    \textbf{MQ INTERFACE} & \\ \hline
+    \tgre \textbf{LMU INTERFACE} & \\ \hline
    
     \hline
 
     \hline
 
-    \textbf{FSM INTERFACE} & \\ \hline
+    \tyel \textbf{MQ INTERFACE} & \\ \hline
    
     \hline
 
     \hline
 
-    \textbf{CU INTERFACE} & \\ \hline
+    \toran \textbf{FSM INTERFACE} & \\ \hline
    
     \hline
 
     \hline
 
-    \textbf{VRF INTERFACE} & \\ \hline
+    \tpur \textbf{CU INTERFACE} & \\ \hline
+   
+    \hline
+
+    \hline
+
+    \tred \textbf{VRF INTERFACE} & \\ \hline
    
     \hline
     
-    a\+load\+inflight & load\+inflight\+o is checked, \\ & it can be 1 when the number of load inflight is 1 or 2 and \\ & it can be 0 otherwise \\ \hline
+    \tlred a\+load\+inflight & load\+inflight\+o is checked, \\\tlred & it can be 1 when the number of load inflight is 1 or 2 and \\\tlred & it can be 0 otherwise \\ \hline
     
-    a\+load\+ready\+o & when load\+inflight\+o = 1 and lmu\+dvalid\+load\+i = 1, \\ & if there is fsm\+read\+en\+lbuf\+i, \\ & the next clock cycle there is load\+ready\+o = 1 \\ \hline
+    \tlred a\+load\+ready\+o & when load\+inflight\+o = 1 and lmu\+dvalid\+load\+i = 1, \\\tlred & if there is fsm\+read\+en\+lbuf\+i, \\\tlred & the next clock cycle there is load\+ready\+o = 1 \\ \hline
     
-    a\+data\+corruption & check that each element that enter \\ & will eventually exit in correct position \\ \hline
+    \tlred a\+data\+corruption & check that each element that enter \\\tlred & will eventually exit in correct position \\ \hline
 
     \hline
 
-    \textbf{VL INTERFACE}  & \\ \hline
+    \tpin \textbf{VL INTERFACE}  & \\ \hline
    
     \hline
 
     \hline
 
-    \textbf{RSN INTERFACE} & \\ \hline
+    \llgray \textbf{RSN INTERFACE} & \\ \hline
    
     \hline
 
@@ -692,7 +706,7 @@ a\+unique\+request & there can't be a request with the same sb\+id \\ &  of an i
 \end{table}
 
 A good example for the handshake is \textbf{a\+mem\+sync\+end\+i}. This is an assumption on the inputs, but will be treated as an assertion.\\
-\begin{lstlisting}[language=Verilog,style=verilog-style]
+\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
 property p_mem_sync_end_i;
 	@(posedge clk_i)
 	memop_sync_end_i |-> !$isunknown(memop_sb_id_i);
@@ -726,7 +740,7 @@ This is the only submodule on which was developed a driver, due to the reduced c
 In the next page it is possible to see one of the operations implemented into the driver. The other ones can be found in the Appendix.
 \newpage
 
-\begin{lstlisting}[language=Verilog,style=verilog-style]
+\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
 if(command.op == gnt_op) begin
     // randomizations
     SEW = command.sew_i;
@@ -820,7 +834,7 @@ To be performed, the formal assertions verification, needs only to instantiate t
 
 Hence here it is possible to see how the assumptions are working differently. If a property is assumed it can never be proved wrong! Only assertions are to check.\\
 
-The tool used it 
+The tool used is provided by Mentor, and it is called Questa Propcheck.\\
 There are different possible outcomes:
 \begin{itemize}
     \item \textbf{proof}: starting at the starting state, no legal stimulus exists that causes in the assertion to be violated. It is normally proven in the first 10-100 cycles;

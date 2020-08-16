@@ -42,21 +42,52 @@
 %%commands for the color of the table cells
 %%TODO create the color light gray, for the headers
 %%TODO create the palettes for the tables
-\definecolor{azz_palette}{RGB}{160,170,240}
-\definecolor{ora_palette}{RGB}{250,220,120}
-\definecolor{yel_palette}{RGB}{200,220,120}
+\definecolor{light_gray}{RGB}{205,205,205} %done
+\definecolor{llight_gray}{RGB}{225,225,225} %done
 
-\definecolor{lazz_palette}{RGB}{190,200,255}
-\definecolor{lora_palette}{RGB}{255,240,170}
-\definecolor{lyel_palette}{RGB}{220,240,160}
+\definecolor{azz_palette}{RGB}{190,211,220} %done
+\definecolor{gre_palette}{RGB}{234,238,203} %done
+\definecolor{yel_palette}{RGB}{245,226,161} %done
+\definecolor{ora_palette}{RGB}{232,179,167} %done
+\definecolor{pur_palette}{RGB}{217,150,167} %done
+\definecolor{pin_palette}{RGB}{248,234,241} %done
+\definecolor{red_palette}{RGB}{194,116,116} %done
+
+
+
+\definecolor{lazz_palette}{RGB}{222,233,238} %done
+\definecolor{lgre_palette}{RGB}{244,245,228} %done
+\definecolor{lyel_palette}{RGB}{249,241,207} %done
+\definecolor{lora_palette}{RGB}{242,217,210} %done
+\definecolor{lpur_palette}{RGB}{235,202,210} %done
+\definecolor{lpin_palette}{RGB}{252,245,246} %done
+\definecolor{lred_palette}{RGB}{225,186,185} %done
+
+
+
+\newcommand{\lgray}{\cellcolor{light_gray}}
+\newcommand{\llgray}{\cellcolor{llight_gray}}
 
 \newcommand{\tazzu}{\cellcolor{azz_palette}}
+\newcommand{\tgre}{\cellcolor{gre_palette}}
+\newcommand{\tyel}{\cellcolor{yel_palette}}
 \newcommand{\toran}{\cellcolor{ora_palette}}
-\newcommand{\tyell}{\cellcolor{yel_palette}}
+\newcommand{\tpur}{\cellcolor{pur_palette}}
+\newcommand{\tpin}{\cellcolor{pin_palette}}
+\newcommand{\tred}{\cellcolor{red_palette}}
+
+
+
 \newcommand{\tlazzu}{\cellcolor{lazz_palette}}
+\newcommand{\tlgre}{\cellcolor{lgre_palette}}
+\newcommand{\tlyel}{\cellcolor{lyel_palette}}
 \newcommand{\tloran}{\cellcolor{lora_palette}}
-\newcommand{\tlyell}{\cellcolor{lyel_palette}}
-%\newcommand{\hcyan}[1]{{\color{teal} #1}}
+\newcommand{\tlpur}{\cellcolor{lpur_palette}}
+\newcommand{\tlpin}{\cellcolor{lpin_palette}}
+\newcommand{\tlred}{\cellcolor{lred_palette}}
+
+
+
   
 \usepackage{listings}
 %% DEFINING THE RULES FOR THE CODE
@@ -132,7 +163,9 @@
 	\$error,
 	\$fatal,
 	\$isunknown,
-	new
+	new,
+	class,
+	endclass
   },
 }
   

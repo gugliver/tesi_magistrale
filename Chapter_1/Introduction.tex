@@ -1,15 +1,15 @@
 \chapter{Introduction}
 This thesis is based on part of the EPI-project, developed at Barcelona Supercomputing Center, in particular on the V-Extension implementation.
-In this Chapter there will be presented and discussed all the RISC-V and V-Extension concepts, but they will be not covered all the topics regarding the RISC-V ISA or all the extensions, as they are not always relevant to the project.\\
-Starting from the Concepts there will be also an explaination on the context of the project, so the real implementation and application of the ISA specifications.
-In particular there will be a exposition of Verification concepts and on the UVM structure, filled by the details useful to understand the work done.
+In this Chapter all the RISC-V and V-Extension concepts will be presented and discussed, but not all of the topics regarding the RISC-V ISA or all the extensions are relevant to the project, so they will not be presented.\\
+Beginning with the Concepts there will also be an explaination on the context of the project, so the real implementation and application of the ISA specifications.
+With a particular focus on Verification concepts and on the UVM structure, filled by the details useful to understand the work done.
 
 
 
 \section{Concepts}
 \subsection{RISC-V}
-RISC-V is an open, extensible and free instruction set architecture (ISA). It was originally designed to support computer architecture research and education\cite{RISC-V-Instruction-Set-Manual}.\\
-The project began at the Berkley, University of California in 2010, and then in 2011 was published the first ISA User Manual. After that there was the first tapeout of a RISC-V chip in 28nm FDSOI donated by STMicroelectronics.\\
+RISC-V is an open, extensible and free instruction set architecture (ISA). It was designed solely to support computer architecture research and education\cite{RISC-V-Instruction-Set-Manual}.\\
+The project, began at the Berkley, University of California in 2010, published the first ISA User Manual in 2011. Afterward that there was the first tapeout of a RISC-V chip in 28nm FDSOI donated by STMicroelectronics.\\
 
 The RISC-V ISA is implemented as a base integer ISA, but it is modular and so supports  variable-length instruction encodings.\\
 This ISA is provided under open source licenses, and it is gaining a lot of popularity due to its open nature. \\
@@ -17,12 +17,12 @@ Mainly there are two primary base integer variants, RV32I and RV64I, which provi
 
 \subsubsection{Extensions}
 
-RISC-V is designed to have good customization and so it's provided with the possibility to be extended, but the base integer instructions cannot be redeﬁned.\\
+RISC-V is designed to have a good customization which is the reason why it is provided with the possibility to be extended, but the base integer instructions cannot be redeﬁned.\\
 There are two kinds of extensions:
 \textit{standard} and \textit{non-standard}.
 \begin{itemize}
-    \item The \textit{standard} ones need to be compatible with all the other standards and also they should aim to be generally useful.
-    \item The \textit{non-standard} ones can be highly specialized in some task and so can be in conflict with other extensions.
+    \item The \textit{standard} ones need to be compatible with all the other standards and they should also aim to be generally useful.
+    \item The \textit{non-standard} ones can be highly specialized in some task and therefore they may conflict with other extensions.
 \end{itemize}
 
 For general development some standard extensions are predefined:
@@ -31,11 +31,11 @@ For general development some standard extensions are predefined:
     
     \item "\textbf{M}" is the standard integer multiplication and division extension, it allows to multiply and divide the values held in the integer registers.
     
-    \item "\textbf{A}" is the standard atomic instruction extension. For inter-processor synchronization is useful to have atomic instructions so with this extension is possible to read, modify, and write memory atomically . 
+    \item "\textbf{A}" is the standard atomic instruction extension. It is useful to have atomic instructions for inter-processor synchronization. In fact, with this extension is possible to read, modify, and write memory atomically. 
     
     \item "\textbf{F}" is the standard single-precision ﬂoating-point extension. It adds ﬂoating-point registers, single-precision computational instructions, and single-precision loads and stores. 
     
-    \item "\textbf{D}" The standard double-precision ﬂoating-point extension. It is useful when the F extension is not enough, so expands it and adds double-precision computational instructions, loads, and stores.
+    \item "\textbf{D}" The standard double-precision ﬂoating-point extension. Advantageous when the F extension is not enough, it expands the extension and adds double-precision computational instructions, loads, and stores.
     
     \item "\textbf{G}" is the denotation for an integer base plus these four standard extensions (“IMAFD”).
 \end{itemize}
@@ -424,18 +424,6 @@ The majority of the automatic tests are made with this structure, and they are s
 Using a simulator for Avispado as input, the driver is a little bit different from a standard one. Indeed the input are not controlled at pinlevel but vector instructions are sent to the core, which will then produce a correct input for the VPU.\\
 
 Those instructions are then compared with with the scoreboard and a result is produced.
-
-In Figure \ref{bin-to-log}it is possible to observe the whole procedure for a test.
-
-\begin{figure}[H]
-    \centering
-    \includegraphics[scale = 0.5]{Chapter_1/img/bin-to-log.png}
-    \caption{Simulation path}
-    \label{bin-to-log}
-\end{figure}
-
-
-
 
 \subsubsection{Submodules UVM}
 
