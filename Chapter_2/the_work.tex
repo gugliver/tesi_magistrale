@@ -3,7 +3,7 @@
 %%talk about the specs
 
 
-The main focus of this thesis will be on 2 important submodules in charge of their load instructions:\\
+The main focus of this thesis will be on two important submodules in charge of their load instructions:\\
 
 \textit{Load Buffer} and \textit{Load Management Unit}.
 
@@ -84,7 +84,7 @@ min\+element\+id\+idx\+o    & index of the first valid \\
 \subsubsection{Sequence ID}
 The sequence id ID is very useful as the memory system does not guarantee the in-order arrival of elements. So this signal contains all the info needed to correctly elaborate the data.\\
 
-It i composed as:
+It is composed as:
 \begin{itemize}
     \item \textbf{seq\+id\+i[4:0]} = \textit{v\+reg}, identifies the logical vector register that the data should be written to;
     
@@ -99,7 +99,7 @@ It i composed as:
 
 
 \subsubsection{Handshake}
-The handshake protocol with the different components is as important as the data manipulation. The following is a simple example with stride equal to 1 and offset = 0 (so, no manipulation on the data in input), also, we don't focus on how long is the vector (VLEN) so the number of elements passed from Avispado is arbitrary fixed.
+The handshake protocol with the different components is as important as the data manipulation. Following, there is a simple example with stride equal to 1 and offset = 0 (so, no manipulation on the data in input), furthermore, we do not focus on how long is the vector (VLEN) so the number of elements passed from Avispado is arbitrary fixed.
 
 \begin{enumerate}
     \item Up to 2 load are granted from the Memory Unit with the load\+granted\+i signal, and the information of sew and stride of the relative instruction are passed;
@@ -123,7 +123,7 @@ In Figure \ref{lmu-time} it is possible to see an example for a unit-strided loa
 \subsubsection{Strided Load}
 In this case all the valid elements are separated by a constant stride. If the stride is equal to 1, then is called unit-stride.\\
 
-In Figure \ref{lmu-strided} there is a simple example to understand how the LMU works in this case.\\
+Figure \ref{lmu-strided} shows how the LMU works in this case.\\
 The parameters (defined in the seq\+id\+i) are defining the elements to consider.
 \begin{figure}[H]
     \centering
@@ -133,7 +133,7 @@ The parameters (defined in the seq\+id\+i) are defining the elements to consider
 \end{figure}
 
 \subsubsection{Indexed Load}
-It is also possible to load values in an indexed way. This means only one element at time is sent, and so the number of valid elements needs to be = 1.\\
+It is also possible to load values in an indexed way. This means that only one element at time is sent, and so the number of valid elements needs to be = 1.\\
 
 In Figure \ref{lmu-indexed} it is possible to see an example for a simple indexed load.
 
@@ -145,10 +145,10 @@ In Figure \ref{lmu-indexed} it is possible to see an example for a simple indexe
 \end{figure}
 
 \subsubsection{Masked Load}
-All the load operations can be masked. This does not change the number of valid elements, but at the end of the process they not will be sent.\\
+All the load operations can be masked. This does not change the number of valid elements, but at the end of the process they will not be sent.\\
 
 
-In Figure \ref{lmu-masked-stride} it is possible to see an example for the simple strided-load used before, but this time, with a mask.
+In Figure \ref{lmu-masked-stride} it is possible to see an example of the simple strided-load used before, but this time, with a mask.
 
 \begin{figure}[H]
     \centering
@@ -159,7 +159,7 @@ In Figure \ref{lmu-masked-stride} it is possible to see an example for the simpl
 
 \subsection{Load Buffer}
 The second submodule that is mainly in charge of a load operation is the Load Buffer.\\
-It is in charge of writing the data sent by Avispado to the Vector Register File. The data can be from different instructions inflight, and the Buffer will always try to optimize and group the data to write.\\
+Its function is writing the data sent by Avispado to the Vector Register File. The data can come from different instructions inflight, and the Buffer will always try to optimize and group the data to write.\\
 
 The LMU receives full cache lines of 512 bits from Avispado and forwards them to the corresponding Load Buffer for each lane (64 bits max per lane), depending on the seq\+id\+i. The position of the data into the LB will be determined by the element ID.\\
 
@@ -189,7 +189,7 @@ In Figure \ref{gen-ex} it is possible to see a general connection between the LM
 \end{figure}
 
 
-In Figure \ref{lb-genz} there is an example for the disposition of the elements of 64 bit. It is also important to say the number of bit for each element group stays the same, this means the number of element depends on the sew.\\
+In Figure \ref{lb-genz} there is an example for the disposition of the elements of 64 bit. It is also important to say the number of bit for each element group stays the same, this means that the number of element depends on the sew.\\
 
 
 \begin{figure}[H]
@@ -199,7 +199,7 @@ In Figure \ref{lb-genz} there is an example for the disposition of the elements 
     \label{lb-genz}
 \end{figure}
 
-The layers of the LB are composed mainly of 4 parts:
+The layers of the LB are mainly composed of 4 parts:
 \begin{itemize}
     \item Elements: the elements in the buffer, they are always 512 bit, so 5 elements with sew = 64, 10 elements with sew =32 and so on;
     
@@ -216,24 +216,24 @@ There are cases in which 3 layers are not enough to store all the elements. Inde
 This case is handled with a retry mechanism:\\
 an element is discarded and a new request is made to Avispado, to  notify the retry.\\
 
-Is important to understand the element to discard when there is a retry, if the new one or the old one.\\
+Is important to understand the element to discard when there is a retry, wheather it is a new or an old one.\\
 
 There are 4 possible cases:
 \begin{enumerate}
-    \item if the incoming data is from the young load and the buffer only contains data from the same load, it will be discarded the data with the highest element group;
+    \item if the incoming data comes from the young load and the buffer does only contain data from the same load, it will be discarded the data with the highest element group;
     
-    \item if the incoming data is from the young load and the buffer contain data from both the oldest and youngest loads, it will discard the incoming data;
+    \item if the incoming data comes from the young load and the buffer contains data from both the oldest and youngest loads, it will discard the incoming data;
     
-    \item if the incoming data is from the old load and the buffer only contains data from the same load, it will be discarded the data with the highest element group;
+    \item if the incoming data comes from the old load and the buffer only contains data from the same load, it will be discarded the data with the highest element group;
     
-    \item if the incoming data is from the old load and the buffer contain data from both the oldest and youngest loads, it will discard the data inside the buffer, the one from the young load.
+    \item if the incoming data comes from the old load and the buffer contain data from both the oldest and youngest loads, it will discard the data inside the buffer, the one from the young load.
 \end{enumerate}
 
 
 
 \subsubsection{Flow}
 In Figure \ref{lb-flow} it is possible to see a simple scheme of the LB's behaviour.
-%describe the flow
+
 \newpage
 \begin{figure}[H]
     \centering
@@ -242,28 +242,34 @@ In Figure \ref{lb-flow} it is possible to see a simple scheme of the LB's behavi
     \label{lb-flow}
 \end{figure}
 
-\section{Verification Plan}
-To have a good approach with the verification of a design, it is important to define a Verification Plan.\\
-There are a lot of ways to do it, and most of the times they can be automatized to better perform in long term support of them. In this specific case, the Verification Team was working along with the Design Team to produce better specifications and not only to test a completed design. This means the Verification Plan is done following the general rules to have a good value in future, but it is not entirely defined a priori.\\
+Following the scheme it is possible to understand the main working flow of the Load Buffer.\\
+When it receives a request it grantees it, then it can have different possibilities.\\
+It can receive the data, and in case activate the retry mechanism, or it can receive another request (up to 2 inflight loads at once) or it can receive a \emph{memop\+sync\+end} and then continue the process to finish the load.\\
+Or it is possible \emph{fsm\+read\+en\+buf\+i} arrives and the LB can write the data in output.\\
 
-It was defined before to create the UVM structure and led to the development of all the tools for the verification. \\
-To define the approach to have also means to define the tools to use, in fact different of them were created:
+
+\section{Verification Plan}
+In order to have a better approach with the verification of a design, it is important to define a Verification Plan.\\
+There are many ways to accomplish it, and most of the times they can be automatized to better perform in long term support of them. In this specific case, the Verification Team was working along with the Design Team to produce better specifications and not only to test a completed design. This means that the Verification Plan is done following the general rules to have a good value in future, but it is not entirely defined a priori.\\
+
+It was previously defined to create the UVM structure and led to the development of all the tools for the verification. \\
+Defining the approach to have does also mean to defining the tools that will be used, in fact, many different of them were created:
 \begin{itemize}
-    \item \textbf{UVM}: is the structure described before, used to stimulate and test the DUT;
+    \item \textbf{UVM}: is the structure described earlier, used to stimulate and test the DUT;
     
     \item \textbf{checkers}: are mainly composed by assertions, some really powerful statements used to define the constraints of the DUT's behaviour. \\
     They can be used in different approaches. Later on this chapter it will be discussed their use as Functional or Formal tools;
     
-    \item \textbf{coverage}: is the driver of the plan. It says were to work, and were there are tests to do. 
+    \item \textbf{coverage}: is the driver of the plan. It says were to work, and were there are tests to perform. 
     
 \end{itemize}
 \subsection{Test Plan}
-To have a good coverage of the cases, and to have good reports to find bugs, it is very important to have a test plan.\\
+In order to have a good coverage of the cases, and good reports to find bugs, it is very important to have a test plan.\\
 
-The test plan defines all the different cases to test for a submodule or for the entire VPU. This means try to find all the different corner cases stimulating the DUT.\\
+The test plan defines all the different cases to test for a submodule or for the entire VPU. This means trying to find all the different corner cases stimulating the DUT.\\
 
-If there is the possibility a good test plan only includes different sets of stimulus, in this way an easy implementation is possible. Not every case is in this way. For example in a submodule of the VPU not every case could be tested only modifying the inputs from the scalar core.\\
-This means sometimes it is necessary to create some modified settings, to create the correct environment for the test.\\
+If there is the possibility a good test plan only includes different sets of stimulus, in this way an easy implementation is possible. But this situation does not cover all the possible cases. For instance, not every case could be tested in a submodule of the VPU only modifying the inputs from the scalar core.\\
+Which means that sometimes it is necessary to create some modified settings, to create the correct environment for the test.\\
 
 It was created a test plan to stress the load operations. Those are affecting a lot of part of the VPU, but the focus will be on the Load Buffer, mainly.\\
 
