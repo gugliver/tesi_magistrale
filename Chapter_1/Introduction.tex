@@ -4,10 +4,6 @@ In this Chapter all the RISC-V and V-Extension concepts will be presented and di
 Beginning with the Concepts there will also be an explaination on the context of the project, so the real implementation and application of the ISA specifications.
 With a particular focus on Verification concepts and on the UVM structure, filled by the details useful to understand the work done.\\
 
-Then, on the next Chapter, the contributions done for this project will be explained and discussed.\\ 
-All the submodules will be explained and then it will be shown the verification methodology used to test the DUTs.\\
-
-Finally all the results will be discussed, following the path to reach them.\\
 
 
 
@@ -46,7 +42,7 @@ For general development some standard extensions are predefined:
 \end{itemize}
 
 
-The design philosophy of the RISC-V projects is based on modularity: the base ISA will not change over time, but new extensions will be available and new feature will be added. Which is a major feature because of the difficulty in finding general useful extension beyond the ones already existing. Therefore, it wouldn't be convenient to constantly add new features to the base ISA and then have to keep track of that at a later time.\\
+The design philosophy of the RISC-V projects is based on modularity: the base ISA will not change over time, but new extensions will be available and new feature will be added. Which is a major feature because of the difficulty in finding general useful extension beyond the ones already existing. Therefore, it would not be convenient to constantly add new features to the base ISA and then have to keep track of that at a later time.\\
 
 
 \subsubsection{Base instructions}
@@ -81,7 +77,7 @@ In the past, parallel computing efforts have shown promise and gathered investme
 Well, most of the paradigms that led to the unicore decision are now changing quickly as the technology changes its needs.\\
 As the technology scales down to the nanometers, the power consumption and the energy consumption are becoming a problem, but the cost of a single transistor is significantly lower instead.\\
 
-However the multicore solution doesn't still meet the conformity for old binaries compilations and it could be difficult to program. Thus, the solution of a parallel architecture with "manycores" seems to be the right one.\\
+However the multicore solution does not still meet the conformity for old binaries compilations and it could be difficult to program. Thus, the solution of a parallel architecture with "manycores" seems to be the right one.\\
 
 The previous paragraphs show the usefulness of the vectors, which allow to compute data in a parallel way, without having multicore programming logic.\\
 A classic example are the VPU (Vector Processing Units) working with SIMD (single instruction multiple data).\\
@@ -126,12 +122,12 @@ There are also 8 vector predicate registers (vp0-vp7). The CSRs vectors define t
     \centering
     \begin{tabular}{|l|l|l|l|}
         \hline
-        Address & Privilege & Name   & Description               \\ \hline
-        0x008   & URW       & vstart & Vector start position     \\ \hline
-        0x009   & URW       & vxsat  & Fixed-point Saturate Flag \\ \hline
-        0x00A   & URW       & vxrm   & Fixed-Point Rounding Mode \\ \hline
-        0xC20   & URO       & vl     & Vector length             \\ \hline
-        0xC21   & URO       & vtype  & Vector data type register \\ \hline
+        Privilege & Name   & Description               \\ \hline
+        URW       & vstart & Vector start position     \\ \hline
+        URW       & vxsat  & Fixed-point Saturate Flag \\ \hline
+        URW       & vxrm   & Fixed-Point Rounding Mode \\ \hline
+        URO       & vl     & Vector length             \\ \hline
+        URO       & vtype  & Vector data type register \\ \hline
     \end{tabular}
     \caption{RISC-V's CSRs}
     \label{CSRs}
@@ -221,7 +217,7 @@ This structure is called \textit{UVM}, and it is formed by different classes use
 \section{Context}
 Prior to start, it is important to highlight that no RISC-V scalar core has been used in this project to test and develop the VPU, it has been used a simulator of it instead. The simulator is called Spike, and the core is called Avispado. Spike is also used for other tasks, consequently the Avispado simulation will always be called Avispado.\\
 In Figure \ref{avi-vpu} it is possible to see the interface between Avispado and the VPU for all the instructions.\\
-%%TODO correction to the palette
+
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.6]{Chapter_1/img/avi-vpu.png}
@@ -370,7 +366,7 @@ Let's proceed analyzing some elements of a standard UVM and its implementations 
     
     \item \textbf{Sequence Item}: it is the fundamental lowest denominator object in the UVM hierarchy. It can also be defined as a transaction and it is the smalles data transfer tha can exist in a UVM. It can include variables and constraints.\\
     
-    It doesn't work with bits or those kind of abstractions only useful when working with the DUT.
+    It does not work with bits or those kind of abstractions only useful when working with the DUT.
     
     \item \textbf{Sequence}: it is generated by the environment using the sequence item. It is an ordered collection of transactions.\\
     Mostly it can impose some contraint to the variables generated into the sequence item.

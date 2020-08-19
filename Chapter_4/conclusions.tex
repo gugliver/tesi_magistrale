@@ -1,23 +1,23 @@
 \chapter{Conclusions}
 \section{Conclusions}
-Starting from the concepts of the vector extensions and then the VPU it was possible to understand why this kind of parallel processing is gaining more and more relevance nowadays.\\
+Starting from the concepts of the vector extensions and then the VPU it is understandable why this kind of parallel processing is gaining more and more relevance nowadays.\\
 
-In this thesis was shown all the effort done to verify the behaviour of some DUTs, in particular for the load operations.\\
+In this thesis we have shown all the efforts to verify the behaviour of some DUTs, in particular for the load operations.\\
 
-The first one was the Load Management Unit, and it was shown its mechanism to send the data to the buffers. This complexity resolved in a lot of issues during the design, in fact a lot of techniques were applied.\\
-It was explained how drive a component by itself, extrapolating it from a structure, helps to understand its blind spots.\\
-Very crucial was the correct defining of a Verification Plan, that allowed to create an high level model to be used as scoreboard.\\
+The first one was the Load Management Unit, and its mechanism was shown to send the data to the buffers. This complexity caused many of issues during the design, in fact a lot of techniques were applied.\\
+It was explained how to drive a component by itself, extrapolating it from a structure, helps to understand its blind spots.\\
+The correct defining of a Verification Plan was very crucial, that allowed to create an high level model to be used as scoreboard.\\
 The verification plan was also important to better define the specifications and, as saw in the founded issues, to add or remove signals were necessary.\\
 
 The second one was the Load Buffer, which required a different approach. It was too complex to create a complete scoreboard. However it was still possible to create an sort of scoreboard divided in more assertions, predicting the majority of the cases without introducing new errors.\\
 It was also very important define a Test Plan, stressing all the corner cases for the storing of the data. This also required an easy way to be implemented, so it was created as binary file combined with some modalities created ad-hoc.\\
 
 Finally all the results were presented, explaining some of the most common issue that can be founded.\\
-It was also very important the contribution on the documentation created and on the structure provided to test the submodules. Indeed this UVM is standalone and was designed to be launched with some simple command launching the correct script.\\
+The contribution on the documentation created and on the structure provided was also very important to test the submodules. Indeed this UVM is standalone and was designed to be launched with some simple command launching the correct script.\\
 
 Thanks to all those techniques it was possible to go on with the design reducing the number of people needed to check for all the bugs.\\
 
 \section{Future developments}
-Regarding the verification process, there is still some space for future developments. In particular the next steps would be to complete the Verification Plan and add assertions and assumption for all the submodules. This will require a little bit of time, but then it will be very easy to add the coverage monitoring. \\
+Regarding the verification process, there is still some space for future developments. In particular the next steps would be to complete the Verification Plan and add assertions and assumptions for all the submodules. This will require a little bit of time, but then it will be very easy to add the coverage monitoring. \\
 
-Talking about the entire project, it is now important to catch up with the specifications that are being updated by RISC-V. In this way it will be possible to provide an innovative VPU, very useful to be implemented in HCP.
+Considering the project in its entirety, it is now important to catch up with the specifications that are being updated by RISC-V. In this way it will be possible to provide an innovative VPU, very useful to be implemented in HCP.
