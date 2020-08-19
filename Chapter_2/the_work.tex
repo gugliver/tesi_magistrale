@@ -38,7 +38,7 @@ The main parameters defining this submodule are:
     
     \item \textbf{MAX\+NUMBER\+ELEMENTS}: maximum number of elements that can be encoded in the chunk of data received (64 when SEW = 8 bit). The standard value is \textit{64}.
     
-    \item \textbf{MAVISPADO\+LOAD\+MASK\+WIDTH}: Indicates the maximum number of mask bits that are received with the data. Every bit of the mask represent a byte into the data. The standard value is \textit{64}.
+    \item \textbf{MAVISPADO\+LOAD\+MASK\+WIDTH}: Indicates the maximum number of mask bit that are received with the data. Every bit of the mask represent a byte into the data. The standard value is \textit{64}.
     
     \item \textbf{NUM\+LANES}: number of lanes. The standard value is \textit{8}.
 \end{itemize}
@@ -62,12 +62,12 @@ load\+data\+valid\+i        & indicates if the data in load\+data\+i bus is vali
 load\+data\+i               & data received from Avispado\\ \hline
 seq\+id\+i                  & the sequence id (described below)\\ \hline
 mask\+valid\+i              & validity of mask\+i signal\\ \hline
-mask\+i                     & mask bits to mask load\+data\+i\\ \hline
+mask\+i                     & mask bit to mask load\+data\+i\\ \hline
 sew\+i                      & identifies the size of each vector element\\ \hline
 stride\+i                   & stride indicated in bytes\\ \hline
 load\+data\+o               & output data sent to the lanes\\ \hline
 load\+dvalid\+o             & indicates if the data in load\+data\+o bus is valid\\ \hline
-mask\+o                     & mask bits to mask load\+data\+o\\
+mask\+o                     & mask bit to mask load\+data\+o\\
                             & it is needed also for not masked inst.\\ \hline
 element\+ids\+o             & identifies each element sent in load\+data\+o\\ \hline
 sb\+id\+o                   & identifies the instruction\\ \hline
@@ -161,7 +161,7 @@ In Figure \ref{lmu-masked-stride} it is possible to see an example of the simple
 The second submodule that is mainly in charge of the load operation is the Load Buffer.\\
 Its function is writing the data sent by Avispado to the Vector Register File. The data can come from different instructions inflight, and the Buffer will always try to optimize and group the data to write.\\
 
-The LMU receives full cache lines of 512 bits from Avispado and forwards them to the corresponding Load Buffer for each lane (64 bits max per lane), depending on the seq\+id\+i. The position of the data into the LB will be determined by the element ID.\\
+The LMU receives full cache lines of 512 bit from Avispado and forwards them to the corresponding Load Buffer for each lane (64 bit max per lane), depending on the seq\+id\+i. The position of the data into the LB will be determined by the element ID.\\
 
 Up to two loads can arrive, but they can come out-of-order, although the implementation will be parameterized to accept N loads in flight.
 \subsubsection{Interface}
@@ -189,7 +189,7 @@ In Figure \ref{gen-ex} it is possible to see a general connection between the LM
 \end{figure}
 
 
-In Figure \ref{lb-genz} there is an example for the disposition of the elements of 64 bits. It is also important to say the number of bits for each element group stays the same, this means that the number of elements depends on the sew.\\
+In Figure \ref{lb-genz} there is an example for the disposition of the elements of 64 bit. It is also important to say the number of bit for each element group stays the same, this means that the number of elements depends on the sew.\\
 
 
 \begin{figure}[H]
@@ -346,7 +346,7 @@ vle.v v0, 0(x1)
 
 END_TEST
 
-# Initializes 4 registers (256 elements of 64 bits each one)
+# Initializes 4 registers (256 elements of 64 bit each one)
 # TODO Do a macro that allocates N registers...
 RVTEST_DATA (
 	.dword 0x0000000200000001, 0x0000000400000003; \
@@ -365,7 +365,7 @@ RVTEST_DATA (
 \end{lstlisting}
 \linespread{1.2}
 
-The test is initialized with a macro, defining the sew = 32 and the size in bits = 512.\\
+The test is initialized with a macro, defining the sew = 32 and the size in bit = 512.\\
 Then the data (the one that follows the instructions) is loaded into a register as address, and is summed an offset of \emph{0x3c}, equal to 60 in decimal.\\ This is the exact value needed to have the first sent element id = 65. As the number of elements will be 512/32 = 16 the element ids will go from 65 to 80.\\
 
 \subsubsection{test on retries}
