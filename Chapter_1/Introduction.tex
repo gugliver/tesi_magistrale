@@ -1,24 +1,24 @@
 \chapter{Introduction}
 This thesis is based on part of the EPI-project, developed at Barcelona Supercomputing Center, in particular on the V-Extension implementation.
-In this Chapter the RISC-V and V-Extension concepts relevant for this thesis will be presented and discussed.\\
+In this Chapter the RISC-V and V-Extension concepts relevant for this thesis will be presented and discussed.
 Beginning with the Concepts there will also be an explaination on the context of the project, so the real implementation and application of the ISA specifications.
-With a particular focus on Verification concepts and on the UVM structure, filled by the details useful to understand the work done.\\
+With a particular focus on Verification concepts and on the UVM structure, filled by the details useful to understand the work done.
 
 
 
 
 \section{Concepts}
 \subsection{RISC-V}
-RISC-V is an open, extensible and free instruction set architecture (ISA). It was initially designed solely to support computer architecture research and education\cite{RISC-V-Instruction-Set-Manual}.\\
-The project, began at the Berkley, University of California in 2010, published the first ISA User Manual in 2011. Afterward that there was the first tapeout of a RISC-V chip in 28nm FDSOI donated by STMicroelectronics.\\
+RISC-V is an open, extensible and free instruction set architecture (ISA). It was initially designed solely to support computer architecture research and education\cite{RISC-V-Instruction-Set-Manual}.
+The project, began at the Berkley, University of California in 2010, published the first ISA User Manual in 2011. Afterward that there was the first tapeout of a RISC-V chip in 28nm FDSOI donated by STMicroelectronics.
 
-The RISC-V ISA is implemented as a base integer ISA, but it is modular and so supports many instruction encodings.\\
-This ISA is provided under open source licenses, and it is gaining a lot of popularity due to its open nature. \\
-Mainly there are two primary base integer variants, RV32I and RV64I, which provide 32-bit or 64-bit user-level address spaces respectively.\\
+The RISC-V ISA is implemented as a base integer ISA, but it is modular and so supports many instruction encodings.
+This ISA is provided under open source licenses, and it is gaining a lot of popularity due to its open nature. 
+Mainly there are two primary base integer variants, RV32I and RV64I, which provide 32-bit or 64-bit user-level address spaces respectively.
 
 \subsubsection{Extensions}
 
-RISC-V is designed to have a good customization which is the reason why it is provided with the possibility to be extended, but the base integer instructions cannot be redeﬁned.\\
+RISC-V is designed to have a good customization which is the reason why it is provided with the possibility to be extended, but the base integer instructions cannot be redeﬁned.
 There are two kinds of extensions:
 \textit{standard} and \textit{non-standard}.
 \begin{itemize}
@@ -42,7 +42,7 @@ For general development, as defined in the specification document \cite{riscv-v-
 \end{itemize}
 
 
-The design philosophy of the RISC-V projects is based on modularity: the base ISA will not change over time, but new extensions will be available and new feature will be added. Which is a major feature because of the difficulty in finding general useful extension beyond the ones already existing. Therefore, it would not be convenient to constantly add new features to the base ISA and then have to keep track of that at a later time.\\
+The design philosophy of the RISC-V projects is based on modularity: the base ISA will not change over time, but new extensions will be available and new feature will be added. Which is a major feature because of the difficulty in finding general useful extension beyond the ones already existing. Therefore, it would not be convenient to constantly add new features to the base ISA and then have to keep track of that at a later time.
 
 
 \subsubsection{Base instructions}
@@ -55,8 +55,8 @@ In Figure \ref{riscv-base-instruction-formats} it is possible to see how the bas
     \label{riscv-base-instruction-formats}
 \end{figure}
 
-It is important to notice that RISC-V is a load-store architecture, which means that only load and store operations can have access to the memory.\\
-It is a very convenient organization, because it reduces the average time-per-operation and guarantees a good functioning of the pipelined structure.\\
+It is important to notice that RISC-V is a load-store architecture, which means that only load and store operations can have access to the memory.
+It is a very convenient organization, because it reduces the average time-per-operation and guarantees a good functioning of the pipelined structure.
 
 The instruction also supports signed byte and half word loads, which is very advantageous when working with signed byte and half word data types.
 
@@ -71,19 +71,20 @@ In Figure \ref{riscv-load-store} it is possible to see how the load-store instru
 
 
 \subsection{Parallel architectures, Vectors and RISC-V V-Extension}
-During the last years, the parallel architecture is gaining inertia on the processors field. This is happening because the real world has parallel behaviour and so the hardware we use to compute simulations and calculus needs to be likewise.\cite{Parallel-Computing}\\
+During the last years, the parallel architecture is gaining inertia on the processors field. This is happening because the real world has parallel behaviour and so the hardware we use to compute simulations and calculus needs to be likewise.\cite{Parallel-Computing}
+
 %But why this is happening now and not before?\\
 %In the past, parallel computing efforts have shown promise and gathered investment, but uniprocessor computing did always eventually prevailed, what is different now?\\
-Also, most of the paradigms that led to the unicore decision are now changing quickly as the technology changes its needs.\\
-In fact, as the technology scales down to the nanometers, the power consumption and the energy consumption are becoming a problem, but the cost of a single transistor is significantly lower instead.\\
+Also, most of the paradigms that led to the unicore decision are now changing quickly as the technology changes its needs.
+In fact, as the technology scales down to the nanometers, the power consumption and the energy consumption are becoming a problem, but the cost of a single transistor is significantly lower instead.
 
 %However the multicore solution does not still meet the conformity for old binaries compilations and it could be difficult to program. Thus, the solution of a parallel architecture with "manycores" seems to be the right one.\\
 
-The previous paragraphs show the usefulness of the vectors, which allow to compute data in a parallel way, without having multicore programming logic.\\
-A classic example are the VPU (Vector Processing Units) working with SIMD (single instruction multiple data).\\
+The previous paragraphs show the usefulness of the vectors, which allow to compute data in a parallel way, without having multicore programming logic.
+A classic example are the VPU (Vector Processing Units) working with SIMD (single instruction multiple data).
 
 A famous example of a vector architecture is the Cray-1, presented in 1975.
-The Cray-1, a load/store architecture, was designed for Supercomputing and its major feature was to have a scalar mode along the vector one. This was advantageous because high performances are not always useful.\\
+The Cray-1, a load/store architecture, was designed for Supercomputing and its major feature was to have a scalar mode along the vector one. This was advantageous because high performances are not always useful.
 
 \subsubsection{Time efficiency}
 As shown in Figure \ref{Multithreading}, with standard multithreading there will often be some empty thread along with the running ones, causing a loss in the efficiency.
@@ -95,10 +96,10 @@ As shown in Figure \ref{Multithreading}, with standard multithreading there will
 \end{figure}
 
 Indeed the major advantage with the Vector computation is the condensation of the processor usage. 
-So that the usage will not be distributed as for standard multithreading processors, but it will have full usage for some cycles and none usage for others\cite{L15-Krste}.\\
+So that the usage will not be distributed as for standard multithreading processors, but it will have full usage for some cycles and none usage for others\cite{L15-Krste}.
 
-But there is a drawback. The computation is dense in terms of CPU usage, but this also means the pipelining is reduced, hence the latency increases. In fact, there always are some dead cycles in vector computing.\\
-But this can be used to increase the efficiency with modern low-power techniques. It was shown \cite{Lemuet2006} the Vector Accelerators, while improving performances up to 10X, can also improve energy efficiency of 40-50\% on loop kernels and 10-20\% on larger program segments.\\ 
+But there is a drawback. The computation is dense in terms of CPU usage, but this also means the pipelining is reduced, hence the latency increases. In fact, there always are some dead cycles in vector computing.
+But this can be used to increase the efficiency with modern low-power techniques. It was shown \cite{Lemuet2006} the Vector Accelerators, while improving performances up to 10X, can also improve energy efficiency of 40-50\% on loop kernels and 10-20\% on larger program segments.
 The pipeline is represented in Figure \ref{Vector-Latency} and the final Clock time usage is represented in Figure \ref{Vectoring}.
 
 \begin{figure}[H]
@@ -140,12 +141,13 @@ base scalar ISA. \cite{riscv-v-specs}.\\
 
 The vector unit must be conﬁgured before being used. 
 The active vector length is held in the CSR vl, which can only hold values between 0 and MVL inclusive.
-The active vector length is usually written with the setvl instruction.\\
+The active vector length is usually written with the setvl instruction.
 
 \subsubsection{Vector instructions}
 Beside than the base instructions we can expect from a Vector Architecture (as a move, add, xor and so on) it is also possible to find some useful operations related to the nature of the vector calculus\cite{riscv-v-specs}:
 \begin{itemize}
-    \item \textbf{vectorial load/store}: are used to copy data between vector registers and memory. Those can be strided or indexed. The strided ones index the elements referring to a starting one and then adding (or subtracting) a certain stride to the base address. This kind of load/store is very fast, in particular in some special cases (as unit-strided or some optimized power of 2).\\
+    \item \textbf{vectorial load/store}: are used to copy data between vector registers and memory. Those can be strided or indexed. The strided ones index the elements referring to a starting one and then adding (or subtracting) a certain stride to the base address. This kind of load/store is very fast, in particular in some special cases (as unit-strided or some optimized power of 2).
+    
     The elements into the indexed ones are basically pointed with a vector of indexes, added to a base address. This process really slows down the operation but allows to select directly the elements.
     
     \item \textbf{widening/narrowing}: these operation are used to increase or decrease the size of the vector's contents. In fact, they are very useful when performing operations that need to increase the result size (as example a multiplication between to integer at 32 bit needs to have 64 bit to not loose information). There are also few operations that require the inverse resizing, as for the narrowing.
@@ -163,7 +165,7 @@ Normally one bit of the mask represent a whole word or byte into the vector. Thi
 \subsection{Verification}
 As the technology scales down, the design complexity explodes. 
 Very small form factor have conflicting requirements for high performance, low-power and area constraints. 
-This lead to a complex design and to elevate the costs.\\
+This lead to a complex design and to elevate the costs.
 
 It is possible to see in Figure \ref{verification-tecnology} how the cost for verification increases drastically with the lowering of the technology node.
 
@@ -175,10 +177,10 @@ It is possible to see in Figure \ref{verification-tecnology} how the cost for ve
     \label{verification-tecnology}
 \end{figure}
 
-Verification is responsible to make sure the design is in track with the specification, so as the design complexity increases so does the verification.\\
+Verification is responsible to make sure the design is in track with the specification, so as the design complexity increases so does the verification.
 
 This is of course an issue for the time-to-market. 
-In particular functional design verification takes 40–50\% of the project resources. In other words, increase the productivity of functional design verification and shorten the design / simulate / debug / cover loop is an essential task \cite{verification-book-2018}.\\
+In particular functional design verification takes 40–50\% of the project resources. In other words, increase the productivity of functional design verification and shorten the design / simulate / debug / cover loop is an essential task \cite{verification-book-2018}.
 
 Also the compounded complexity as well grows faster that the compounded productivity. This gap only means the verification needs to be faster and hence need to implement more techniques.
 It is possible to see a study on the complexity/productivity gap in Figure \ref{complexity-gap}
@@ -202,7 +204,7 @@ The verification is mainly divided in Functional and Formal verification:
 \bigskip
 
 \subsubsection{Coverage}
-The whole process of verification does also need to have a direction. Coverage is used to do it. \\
+The whole process of verification does also need to have a direction. Coverage is used to do it.
 
 Coverage is very useful and can be performed on functionalities or on the code:
 \begin{itemize}
@@ -212,14 +214,14 @@ Coverage is very useful and can be performed on functionalities or on the code:
 
 \end{itemize}
 
-The main goal is to take the coverage to 100\%. But at the same time it is easy to fool the coverage, because it depends on how the cases are taken into account. \\
+The main goal is to take the coverage to 100\%. But at the same time it is easy to fool the coverage, because it depends on how the cases are taken into account.
 
 In order to use all of those techniques there is the need of a structure to contain and control them.
 This structure is called \textit{UVM}, and it is formed by different classes useful to instantiate the controls and the drivers needed to verify the RTL. Later on this Chapter the particular case of this work will be discussed.
 
 \section{Context}
-Prior to start, it is important to highlight that no RISC-V scalar core has been used in this project to test and develop the VPU, it has been used a simulator of it instead. The simulator is called Spike, and the core is called Avispado. Spike is also used for other tasks, consequently the Avispado simulation will always be called Avispado.\\
-In Figure \ref{avi-vpu} it is possible to see the interface between Avispado and the VPU for all the instructions.\\
+Prior to start, it is important to highlight that no RISC-V scalar core has been used in this project to test and develop the VPU, it has been used a simulator of it instead. The simulator is called Spike, and the core is called Avispado. Spike is also used for other tasks, consequently the Avispado simulation will always be called Avispado.
+In Figure \ref{avi-vpu} it is possible to see the interface between Avispado and the VPU for all the instructions.
 
 \begin{figure}[H]
     \centering
@@ -229,12 +231,12 @@ In Figure \ref{avi-vpu} it is possible to see the interface between Avispado and
 \end{figure}
 
 
-The instructions are issued with a credit system, whose number corresponds to the  depth of the issue queue of the VPU.\\
+The instructions are issued with a credit system, whose number corresponds to the  depth of the issue queue of the VPU.
 
 
 
 \subsection{The VPU}
-In Figure \ref{VPU} it is possible to find a simplified scheme of the implemented VPU.\\
+In Figure \ref{VPU} it is possible to find a simplified scheme of the implemented VPU.
 
 \begin{figure}[H]
     \centering
@@ -242,45 +244,45 @@ In Figure \ref{VPU} it is possible to find a simplified scheme of the implemente
     \caption{EPI project's VPU}
     \label{VPU}
 \end{figure}
-It is important to notice that the VPU implemented is a decoupled architecture, this means that tow operation can be executed at once only if they are noth both memory operations or arithmetic ones.\\
+It is important to notice that the VPU implemented is a decoupled architecture, this means that tow operation can be executed at once only if they are noth both memory operations or arithmetic ones.
 
 
 The main elements componing the VPU are:
 \begin{itemize}
-    \item \textbf{Renaming Unit}: the scope of this unit is to remove false dependeces due to the naming of the registers. This is possible because of the virtual memory, so the processor only uses logical registers, but in this component they are mapped to physical registers using the FRL (Free Register List).\\
-    Write-to-write dependencies are removed if possible, in order to avoid Data Hazards.\\
+    \item \textbf{Renaming Unit}: the scope of this unit is to remove false dependeces due to the naming of the registers. This is possible because of the virtual memory, so the processor only uses logical registers, but in this component they are mapped to physical registers using the FRL (Free Register List).
+    Write-to-write dependencies are removed if possible, in order to avoid Data Hazards.
  
-    \item \textbf{Queues}: the VPU is a decoupled vector architecture, this means that the arithmetic instructions and the memory instructions are buffered in different queues.\\
-    In this scheme is possible to see how the two queues are independent in the issue stage, in which the instructions are sent respectfully to the vector lanes or the memory unit.\\
-    The vector lane is capable to perform only one arithmetic instruction at time, so the issue queue must wait until the previous instruction finishes its execution, simultaneously a memory instruction can be performed.\\
+    \item \textbf{Queues}: the VPU is a decoupled vector architecture, this means that the arithmetic instructions and the memory instructions are buffered in different queues.
+    In this scheme is possible to see how the two queues are independent in the issue stage, in which the instructions are sent respectfully to the vector lanes or the memory unit.
+    The vector lane is capable to perform only one arithmetic instruction at time, so the issue queue must wait until the previous instruction finishes its execution, simultaneously a memory instruction can be performed.
     The whole Issue stage is composed by the queue and the issue logic. The number of entries in the issue queues is parameterized.
     
-    \item \textbf{Memory Units}: as mentioned before, the only instructions that can access memory are the load and the store operations. There are different units working on memory instructions: The \emph{load management unit}, the \emph{store managemkent unit} and the \emph{index and mask unit}. As the name suggest their core business is respectively load operations, store operations and a unit to mask the operations and provide the indexes.\\
-    The possible addressing modes are unit-strided, strided and indexed.\\
+    \item \textbf{Memory Units}: as mentioned before, the only instructions that can access memory are the load and the store operations. There are different units working on memory instructions: The \emph{load management unit}, the \emph{store managemkent unit} and the \emph{index and mask unit}. As the name suggest their core business is respectively load operations, store operations and a unit to mask the operations and provide the indexes.
+    The possible addressing modes are unit-strided, strided and indexed.
     
 
     
-    \item \textbf{Vector Lane}: the Vector Lane is the core of the VPU and operates on the vector register file. It is composed by different vector processing lanes. This is a very common technique that allows to improve performance and scalability.\\
-    In an ideal multi-lane vector architecture all the lane are working simultaneously and thus efficiently, with the cost of more hardware to control the synchronization.\\
+    \item \textbf{Vector Lane}: the Vector Lane is the core of the VPU and operates on the vector register file. It is composed by different vector processing lanes. This is a very common technique that allows to improve performance and scalability.
+    In an ideal multi-lane vector architecture all the lane are working simultaneously and thus efficiently, with the cost of more hardware to control the synchronization.
     
-    One of the most important submodules of the Vector Lane is the VRF (Vector Register File). This is designed with only one read/write port, this because it is important to limit the area usage, and so the operating frequency. It is necessary to have a buffer in order to avoid streaming problems and bubble inside the pipe.\\
+    One of the most important submodules of the Vector Lane is the VRF (Vector Register File). This is designed with only one read/write port, this because it is important to limit the area usage, and so the operating frequency. It is necessary to have a buffer in order to avoid streaming problems and bubble inside the pipe.
     
     This solution implies the existence of some cost in terms of latency, due to the starting of a new instruction.
-    Inside the Vector Lane are also important the WB (Write-Back Buffer) and the LB (Load Buffer). Those buffers store the data until the VRF line is complete.\\
+    Inside the Vector Lane are also important the WB (Write-Back Buffer) and the LB (Load Buffer). Those buffers store the data until the VRF line is complete.
     Then there is the SB (Store Buffer) which hold the data read from the  register file and then sends it to the MU. 
     Eventually when an instruction is completed the physical register are then freed. 
     
-    The VPU can be configured with different numbers of lanes from 1 up to 8, the default value is 8.\\
+    The VPU can be configured with different numbers of lanes from 1 up to 8, the default value is 8.
     
     \item \textbf{Lane Interconnection}: due to the range of the Lanes, which can be any value between 1 and 8, it is important to have a system capable of synchronizing all of them. There are also some operations which require to use multiple lanes at once to perform the execution, so a unidirectional ring intercommunication is implemented between the lanes.
 \end{itemize}
 
-It is also important to point out how the memory is organized in order to understand how some operations work.\\
+It is also important to point out how the memory is organized in order to understand how some operations work.
 
-The vectors are distributed into the different lanes. Indeed it is possible to say the Vector are sliced into the lanes, this means it is necessary an efficient organization in order to understand where to put the right data.\\
+The vectors are distributed into the different lanes. Indeed it is possible to say the Vector are sliced into the lanes, this means it is necessary an efficient organization in order to understand where to put the right data.
 
 
-According to the RISC-V V-extension, vector elements can have different sizes. The parameter that describes the size of an element is the SEW (Standard Element Width). This is determined by the CSR (Control and Status Register) named vsew. The maximum supported SEW into the EPI project is 64 bit. Also the maximum VLEN is equal to 16384 bit, so 2kB.\\
+According to the RISC-V V-extension, vector elements can have different sizes. The parameter that describes the size of an element is the SEW (Standard Element Width). This is determined by the CSR (Control and Status Register) named vsew. The maximum supported SEW into the EPI project is 64 bit. Also the maximum VLEN is equal to 16384 bit, so 2kB.
 
 The number of elements a vector registers holds is given by VLEN/SEW, according to the Table \ref{sew-el}:
 
@@ -326,11 +328,11 @@ Let's focus now on the submodules on which the work of this thesis was done.
 \subsection{The UVM}
 As mentioned before, the UVM is the solution to the standardization problem of the verification. In fact, it is a transaction-level methodology (TLM) designed for testbench development. It is a class library that facilitates writing configurable and reusable code \cite{verification-book-2018}.
 
-The testbenches created are designed to be reusable, as a result less code and more production is achieved.\\
+The testbenches created are designed to be reusable, as a result less code and more production is achieved.
 
-This is mainly obtained with the polymorphism. It means an object can be used to define a reusable class. Operating with this technique an object can be used as a super-class and other sub-classes can be created.\\
+This is mainly obtained with the polymorphism. It means an object can be used to define a reusable class. Operating with this technique an object can be used as a super-class and other sub-classes can be created.
 
-It works following an hierarchy method, and every component can only operate with the components above it. In this way multiple subcomponents can be instantiated.\\
+It works following an hierarchy method, and every component can only operate with the components above it. In this way multiple subcomponents can be instantiated.
 
 \subsubsection{Generic UVM}
 In Figure \ref{gen-uvm} it is possible to see an example of a standard UVM.
@@ -345,56 +347,56 @@ In Figure \ref{gen-uvm} it is possible to see an example of a standard UVM.
 Let's proceed analyzing some elements of a standard UVM and its implementations in the EPI project.
 
 \begin{itemize}
-    \item \textbf{Testbench}: typically, it instantiates the DUT (Design Under Test) and the UVM Test Class. Also it is responsible to configure the connections between them.\\
-    There are different ways to communicate into an UVM and in this module is possible to choose them.\\
+    \item \textbf{Testbench}: typically, it instantiates the DUT (Design Under Test) and the UVM Test Class. Also it is responsible to configure the connections between them.
+    There are different ways to communicate into an UVM and in this module is possible to choose them.
     It is also important to say that the Testbench instantiates the Test dynamically at run-time, enabling to compile it once and run many Tests.
     
-    \item \textbf{Test}: this is the top-level component into an UVM testbench.\\
+    \item \textbf{Test}: this is the top-level component into an UVM testbench.
     Typically a base test class is defined to instantiate the top-level environment and then it is extended to the specific case.
     
     \item \textbf{Environment}: it is a component that defines the environment of a test. It aims to define all the agents and the scoreboards. 
-    The top-level environment instantiates and configures the reusable verification IP and defines its default configurations based on the application of the test.\\
+    The top-level environment instantiates and configures the reusable verification IP and defines its default configurations based on the application of the test.
     
     Typically there is a different environment for each interface of the DUT.
     
-    \item \textbf{Sequence Item}: it is the fundamental lowest denominator object in the UVM hierarchy. It can also be defined as a transaction and it is the smallest data transfer that can exist in a UVM. It can include variables and constraints.\\
+    \item \textbf{Sequence Item}: it is the fundamental lowest denominator object in the UVM hierarchy. It can also be defined as a transaction and it is the smallest data transfer that can exist in a UVM. It can include variables and constraints.
     
     
-    \item \textbf{Sequence}: it is generated by the environment using the sequence item. It is an ordered collection of transactions.\\
-    Mostly it can impose some contraint to the variables generated into the sequence item.
+    \item \textbf{Sequence}: it is generated by the environment using the sequence item. It is an ordered collection of transactions.
+    Mostly it can impose some constraint to the variables generated into the sequence item.
     
-    \item \textbf{Agent}: it is one of the most important components of the UVM. It groups toghether all the components that are dealing with the DUT and so a specific DUT interface.\\
-    Normally there is a different agent for every interface or DUT. This allows specific sequencers for specific stimulus.\\
+    \item \textbf{Agent}: it is one of the most important components of the UVM. It groups together all the components that are dealing with the DUT and so a specific DUT interface.
+    Normally there is a different agent for every interface or DUT. This allows specific sequencers for specific stimulus.
     It can also be active or passive depending on its action on the DUT: if it sends signals to stimulate the DUT it is considered active, and otherwise passive.
     
     It contains:
     \begin{itemize}
-        \item \textbf{Driver}: it is the component responsible for the communication between the UVM and the DUT at pinlevel. It receives the sequences from the sequencer and then converts them into signals, following the interface protocol.\\
-        This action is observed by another component, the (command) monitor.\\
+        \item \textbf{Driver}: it is the component responsible for the communication between the UVM and the DUT at pinlevel. It receives the sequences from the sequencer and then converts them into signals, following the interface protocol.
+        This action is observed by another component, the (command) monitor.
         
         It can be turned off when the agent is defined as passive. In this way there is no other component sending signals to the DUT.
 
         
          \item \textbf{Sequencer}: it controls the requests and the responses between the driver and the sequence item. So it is a controller.
          
-        \item \textbf{Monitor}: it observes the outputs of the DUT at pinlevel. Then transforms those signals into transactions for the analysis.\\
-        On a larger stage, those transactions are very likely then compared with the expected outputs. This is normally done in the scoreboard.\\
-        It can perform internally also some processing.\\
+        \item \textbf{Monitor}: it observes the outputs of the DUT at pinlevel. Then transforms those signals into transactions for the analysis.
+        On a larger stage, those transactions are very likely then compared with the expected outputs. This is normally done in the scoreboard.
+        It can perform internally also some processing.
         The signals the monitor is observing could be monitored into the driver, but this would mean violating the modularity choices for the UVM.
 
         
     \end{itemize}
     
-    \item \textbf{Scoreboard}: it is a checker for the outputs of the DUT. It compares the transactions obtained by the monitors against a predicted result.\\
+    \item \textbf{Scoreboard}: it is a checker for the outputs of the DUT. It compares the transactions obtained by the monitors against a predicted result.
     There are different ways to generate a predicted result and so a scoreboard, it often uses a C/C++ model, but it is possible to use also other languages as well.
     
 \end{itemize}
 
 
-It is important to point the UVM works in different phases.\\
+It is important to point the UVM works in different phases.
 It is possible to macro-divide the process in 3 phases: the \textit{build phase}: here the components are constructed from the top, in this phase an important sub-phase is present, the \textit{connect sub-phase}: here all the components are connected upwards; the \textit{run phase}: in this phase the simulation is ran, and finally the \textit{cleanup phase}: here all the results are checked and reported.
 
-In Figure \ref{phases-uvm} it is illustrated a simple scheme representing all the phases.\\
+In Figure \ref{phases-uvm} it is illustrated a simple scheme representing all the phases.
 
 
 \begin{figure}[H]
@@ -410,19 +412,19 @@ In this project two different UVMs were implemented. One to test all the VPU (an
 Let's proceed with a brief analysis of those two structures.
 
 \subsubsection{Main UVM}
-The main UVM is interfaced with Avispado and it is composed following the standard structure. It was mainly used to support the use of a scoreboard (Spike) and then to implement then some checkers and some coverage controls.\\
+The main UVM is interfaced with Avispado and it is composed following the standard structure. It was mainly used to support the use of a scoreboard (Spike) and then to implement then some checkers and some coverage controls.
 
-The majority of the automatic tests are made with this structure, and they are scripted to run all the night and to produce a valid dataset to then find and fix the bugs. Those tests are created using random RISC-V vector instructions, with some constraints that allow the tests to be valid.\\
+The majority of the automatic tests are made with this structure, and they are scripted to run all the night and to produce a valid dataset to then find and fix the bugs. Those tests are created using random RISC-V vector instructions, with some constraints that allow the tests to be valid.
 
-Using a simulator for Avispado as input, the driver is a little bit different from a standard one. Indeed, the input are not controlled at pinlevel but vector instructions are sent to the core, which will then produce a correct input for the VPU.\\
+Using a simulator for Avispado as input, the driver is a little bit different from a standard one. Indeed, the input are not controlled at pinlevel but vector instructions are sent to the core, which will then produce a correct input for the VPU.
 
 Those instructions are ultimately compared with with the scoreboard and a result is produced.
 
 \subsubsection{Submodules UVM}
 
-Another structure was necessary due to the different interface, and so different drivers. It is not always trivial to create a driver for a submodule, because the handshake processes can be very complex, thus it would be possible to introduce some error in the verification structure.\\
+Another structure was necessary due to the different interface, and so different drivers. It is not always trivial to create a driver for a submodule, because the handshake processes can be very complex, thus it would be possible to introduce some error in the verification structure.
 
-In this thesis this structure was solely used for one submodule, and for the other one other techniques were implemented.\\
+In this thesis this structure was solely used for one submodule, and for the other one other techniques were implemented.
 
 The structure of this UVM is represented in figure \ref{sub-uvm}. It was used mostly to handle the checkers and the drivers.
 

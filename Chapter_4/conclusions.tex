@@ -2,17 +2,17 @@
 \section{Conclusions}
 In this thesis we have shown all the efforts to verify the behaviour of some DUTs, in particular for the load operations.\\
 
-Analyzing the results obtained with the Load Management Unit, it is possible to understand why it is crucial to have a good Verification Plan. It was used to test all the specifications and in this way to test their robustness. In different cases it was possible to find some bug using a detailed Verification Plan. It also helped defining an high level model, to create then a scoreboard.\\
+Analyzing the results obtained with the Load Management Unit, it is possible to understand why it is crucial to have a good Verification Plan. It was used to test all the specifications and in this way to test their robustness. In different cases it was possible to find some bug using a detailed Verification Plan. It also helped defining an high level model, to create then a scoreboard.
 
-In particular the usage of the scoreboard is useful when the design is simple. In this thesis the scoreboard was created for the LMU but not for the LB, this because it would have required a verification process on the scoreboard itself.\\
+In particular the usage of the scoreboard is useful when the design is simple. In this thesis the scoreboard was created for the LMU but not for the LB, this because it would have required a verification process on the scoreboard itself.
 
-So there were created scoreboard-like assertions to test the results. However, those assertions are not testing the difficult cases, so it is very hard they will find some hidden bug. \\
-But it is still possible to improve them, creating a complete scoreboard. In fact, all the code created, was created following the philosophy of re-usability and modularity.\\
+So there were created scoreboard-like assertions to test the results. However, those assertions are not testing the difficult cases, so it is very hard they will find some hidden bug. 
+But it is still possible to improve them, creating a complete scoreboard. In fact, all the code created, was created following the philosophy of re-usability and modularity.
 
-Then some blind spots were still present when performing long, random tests. This because the randomness needs a lot of time to reach all the corner cases. For that a Test Plan was necessary.\\
-The Test Plan was useful also to define the behaviour in difficult cases.\\
+Then some blind spots were still present when performing long, random tests. This because the randomness needs a lot of time to reach all the corner cases. For that a Test Plan was necessary.
+The Test Plan was useful also to define the behaviour in difficult cases.
 
-Then the Formal tools were used only to assure the assumptions and the assertions were done correctly. This is not the only usage of this tool, it could be used to optimize a lot the model using mathematical equivalence, but it was too early to apply it in this project.\\
+Then the Formal tools were used only to assure the assumptions and the assertions were done correctly. This is not the only usage of this tool, it could be used to optimize a lot the model using mathematical equivalence, but it was too early to apply it in this project.
 
 All the tools created are still in use in the current development of the EPI project. Also when a test is reported as passed, the tools are still necessary for the regression tests.
 
@@ -20,8 +20,8 @@ All the tools created are still in use in the current development of the EPI pro
 
 \section{Future developments}
 Regarding the verification process, there is still some space for future developments. In particular the next steps would be to complete the Verification Plan and add assertions and assumptions for all the submodules. 
-It would also be useful to have a scoreboard for each submodule and to complete the one for the Load Buffer.\\
-Formal verification could be also used to test all the VPU and then to optimize the design in order to have less logic and so less errors.\\
-Finally it would be good to implement more coverage controls. This will allow to better guide the process and to avoid blind spots.\\
+It would also be useful to have a scoreboard for each submodule and to complete the one for the Load Buffer.
+Formal verification could be also used to test all the VPU and then to optimize the design in order to have less logic and so less errors.
+Finally it would be good to implement more coverage controls. This will allow to better guide the process and to avoid blind spots.
 
 Considering the project in its entirety, it is now important to catch up with the specifications that are being updated by RISC-V. In this way it will be possible to provide an innovative VPU.

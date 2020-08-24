@@ -1,5 +1,5 @@
 \chapter{Contributions}
-Most of the code created to verify the design was written in SystemVerilog. This is a hardware description language, created as an evolution of the Verilog language, adding some extensions as OOP and specific keywords for assertions and coverage.\\
+Most of the code created to verify the design was written in SystemVerilog. This is a hardware description language, created as an evolution of the Verilog language, adding some extensions as OOP and specific keywords for assertions and coverage.
 Other languages were used for the scripting as Python and tickles.
 
 
@@ -7,7 +7,7 @@ Other languages were used for the scripting as Python and tickles.
 %%talk about the specs
 
 
-The main focus of this thesis will be on two important submodules in charge of their load instructions:\\
+The main focus of this thesis will be on two important submodules in charge of their load instructions:
 
 \textit{Load Buffer} and \textit{Load Management Unit}.
 
@@ -15,12 +15,12 @@ The main focus of this thesis will be on two important submodules in charge of t
 %general
 
 
-This module is in charge of handling the load operations. It receives cache lines form Avispado containing the data for the load. Then, the LMU rearranges the data to distribute it to the vector lanes.\\
-Those can be strided or indexed.\\
+This module is in charge of handling the load operations. It receives cache lines form Avispado containing the data for the load. Then, the LMU rearranges the data to distribute it to the vector lanes.
+Those can be strided or indexed.
 
 Since the VPU is able to work out-of-order and with two loads in parallel, an ID system is necessary, so each instructions comes with an ID.
 In particular the load operation come with the signal \textbf{seq\+id\+i}.
-This signal identifies the load and contains all the determinant informations about it.\\
+This signal identifies the load and contains all the determinant informations about it.
 
 The main elements of this submodules are:
 \begin{itemize}
@@ -412,8 +412,9 @@ As saw into the test plan, an easy way to test the results is the scoreboard, th
 Before the work of this thesis started the UVM for the interface and a scoreboard for the results were already implemented by the BSC verification team. Let's now analyze a little bit how the scoreboard works and why it was useful to develop other tests.
 
 \subsubsection{Spike}
-Spike is a RISC-V ISA Simulator. For this specific project it was extended to support the vector extension.\\
-It is used first to simulate the Avispado core, producing stream of vector instructions and memory addresses. Those are feed to the VPU using the UVM. A result is produced using also the Spike vector extension simulation. Finally the results are compared and reported into a scoreboard. A simple scheme is represented in Figure \ref{bin-to-log}. \\
+Spike is a RISC-V ISA Simulator. For this specific project it was extended to support the vector extension.
+
+It is used first to simulate the Avispado core, producing stream of vector instructions and memory addresses. Those are feed to the VPU using the UVM. A result is produced using also the Spike vector extension simulation. Finally the results are compared and reported into a scoreboard. A simple scheme is represented in Figure \ref{bin-to-log}.
 
 \begin{figure}[H]
     \centering
@@ -422,12 +423,12 @@ It is used first to simulate the Avispado core, producing stream of vector instr
     \label{bin-to-log}
 \end{figure}
 
-This kind of tool is very useful when running tests because it is faster than a specific test for each component the test is stressing, and at the same time can give hints about the working condition. Of course it is just a first step, because it will be hard to find a bug using only the comparison with the final result.\\
+This kind of tool is very useful when running tests because it is faster than a specific test for each component the test is stressing, and at the same time can give hints about the working condition. Of course it is just a first step, because it will be hard to find a bug using only the comparison with the final result.
 
 \subsubsection{Load Management Unit's scoreboard}
-The aim of this thesis was principally based on testing the Load operations, so a scoreboard for the LMU was created.\\
+The aim of this thesis was principally based on testing the Load operations, so a scoreboard for the LMU was created.
 
-Recalling the LMU working model, it first takes into account the stride, reversing the data in case of negative stride, then the data is positioned correctly again, then it is compacted considering the stride, and finally it is aligned to match with correct ID.\\
+Recalling the LMU working model, it first takes into account the stride, reversing the data in case of negative stride, then the data is positioned correctly again, then it is compacted considering the stride, and finally it is aligned to match with correct ID.
 
 In high level it was done using vectors, and a couple of steps were merged together. It is possible to see below the pseudo code representing the implementation in this way.
 
@@ -459,18 +460,18 @@ In high level it was done using vectors, and a couple of steps were merged toget
 \end{lstlisting}
 \linespread{1.2}
 
-Also the mask was predicted in a similar way, thus the masking step was then implemented with a simple check on the mask to have the correct result.\\
+Also the mask was predicted in a similar way, thus the masking step was then implemented with a simple check on the mask to have the correct result.
 
-In this way it is possible to have an exact result for the LMU, so when a test fails, it is always possible to check if the LMU performed correctly with the data it received in input.\\
+In this way it is possible to have an exact result for the LMU, so when a test fails, it is always possible to check if the LMU performed correctly with the data it received in input.
 
 \subsubsection{Load Buffer's scoreboard}
-For the Load Buffer the behaviour was really complicated, so a simplified  version of a scoreboard was implemented.\\
+For the Load Buffer the behaviour was really complicated, so a simplified  version of a scoreboard was implemented.
 
-Hence it does not work on the correct result operation per operation, this because the LB has 3 layer of deepness and always tries to optimize the output. So to implement all the rules about the output would be to create a similar structure with an high risk to create a bug in the Verification model.\\
+Hence it does not work on the correct result operation per operation, this because the LB has 3 layer of deepness and always tries to optimize the output. So to implement all the rules about the output would be to create a similar structure with an high risk to create a bug in the Verification model.
 
-The concept was to see the data in input and then to expect, eventually, the same data in the correct position as output. This of course is not conflicting with the concept of retry, in fact when a retry is executed it is guaranteed all the data as output, eventually.\\
+The concept was to see the data in input and then to expect, eventually, the same data in the correct position as output. This of course is not conflicting with the concept of retry, in fact when a retry is executed it is guaranteed all the data as output, eventually.
 
-It was implemented as an assertion (whose behavior will be explained in the following section), to create a time correlation.\\
+It was implemented as an assertion (whose behavior will be explained in the following section), to create a time correlation.
 
 A pseudo version of this checker is represented below.
 \bigskip
@@ -506,17 +507,17 @@ Using the element\+id and the corresponding bank (based on the SEW), it is possi
 
 
 \subsection{Checkers}
-A checker can be composed of many tools, they main one are the Assertions.\\
+A checker can be composed of many tools, they main one are the Assertions.
 
-An assertion is a simple check on a defined functionality. It is wanted to receive an error when an assertion fails.\\
-It is mainly composed by two parts both of them conditions, but they act differently and are time related. The first part is a condition to \textit{"fire"}, this means when the condition is true the assertions starts checking for the second part.\cite{verification-book-2016}\\
+An assertion is a simple check on a defined functionality. It is wanted to receive an error when an assertion fails.
+It is mainly composed by two parts both of them conditions, but they act differently and are time related. The first part is a condition to \textit{"fire"}, this means when the condition is true the assertions starts checking for the second part.\cite{verification-book-2016}
 
-The second part is another check on some condition, and can reveal the result of the check. At this point the possible results are \textit{True} or \textit{False}.\\
+The second part is another check on some condition, and can reveal the result of the check. At this point the possible results are \textit{True} or \textit{False}.
 
-Both of them can be time consuming, and conditions on the edge are possible.\\
-It is also possible to create \textit{properties} and \textit{sequences} and then embed them into the assertions, in this way it is possible to reuse those parts.\\
+Both of them can be time consuming, and conditions on the edge are possible.
+It is also possible to create \textit{properties} and \textit{sequences} and then embed them into the assertions, in this way it is possible to reuse those parts.
 
-To connect them to the whole structure it was used the binding method: basically when a file containing the checker is created, is then compiled with a bind option to connect it to an RTL file. In this way the files can be kept separate and the design and verification teams can work together on different files. \cite{binding}\\
+To connect them to the whole structure it was used the binding method: basically when a file containing the checker is created, is then compiled with a bind option to connect it to an RTL file. In this way the files can be kept separate and the design and verification teams can work together on different files. \cite{binding}
 
 Let's now see the basic structure of an assertion.
 \bigskip
@@ -534,18 +535,18 @@ assertion_1 : assert property ( disable_iff(rst) property_1) else $error("")
 \linespread{1.2}
 \bigskip
 
-Basically if \emph{a} is HIGH(1) then it is expected that \emph{b} is also HIGH(1).\\
+Basically if \emph{a} is HIGH(1) then it is expected that \emph{b} is also HIGH(1).
 
 The functionality is expressed into the property, then it is asserted into the assertion. It could be possible to recall tasks or processes, in this way a certain computation is possible.
-It can also provide an error message.\\
-When the reset is asserted the assertion is disabled. This means the assertion needs now to be re-fired with a new starting condition.\\
+It can also provide an error message.
+When the reset is asserted the assertion is disabled. This means the assertion needs now to be re-fired with a new starting condition.
 
 \subsubsection{Load Management Unit's assertions}
-The main focus was on the calculated result and on the handshake with the other components.\\
+The main focus was on the calculated result and on the handshake with the other components.
 
-In the verification plan were previously defined all the functionality to check, then a list of assertions was used to produce a good checker.\\
+In the verification plan were previously defined all the functionality to check, then a list of assertions was used to produce a good checker.
 
-The list of all the checkers can be found in Appendix.\\
+The list of all the checkers can be found in Appendix.
 
 \begin{table}[H]
     \centering
@@ -690,16 +691,16 @@ a_el_ids_o : assert property( disable iff(!rsn_i || kill_i) p_el_ids_o )
 \linespread{1.2}
 \bigskip
 
-It is possible to see the property uses the value \textit{computed\+el\+id\+o}, a global variable. It is important to say the task compute\+ids is not called by the property but from another external process not displayed here.\\
+It is possible to see the property uses the value \textit{computed\+el\+id\+o}, a global variable. It is important to say the task compute\+ids is not called by the property but from another external process not displayed here.
 
-Finally the yellow ones are just checking the conditions for the reset and the expected output.\\
+Finally the yellow ones are just checking the conditions for the reset and the expected output.
 
-It is also important to notice, some of those \textit{are not assertions}, but \textit{assumptions}. This means that they are conditions on the input and not on the outputs. There is no difference for the Functional Verification, but there will be for the Formal one. This will be better explained later on this Chapter.\\
+It is also important to notice, some of those \textit{are not assertions}, but \textit{assumptions}. This means that they are conditions on the input and not on the outputs. There is no difference for the Functional Verification, but there will be for the Formal one. This will be better explained later on this Chapter.
 
 
 
 \subsubsection{Load Buffer's assertions}
-A similar approach was adopted for the Load Buffer. Having a lot of interfaces the LB has also a lot of handshakes, and so assertions. For this in the Table \ref{tab_lb_check} are only reported some categories containing all the assertions for an interface.\\
+A similar approach was adopted for the Load Buffer. Having a lot of interfaces the LB has also a lot of handshakes, and so assertions. For this in the Table \ref{tab_lb_check} are only reported some categories containing all the assertions for an interface.
 
 
 \begin{table}[H]
@@ -790,22 +791,22 @@ a_mem_sync_end_i : assume property (disable iff (!rsn_i || kill_i) p_mem_sync_en
 \end{lstlisting}
 \linespread{1.2}
 
-The property is using the system function \textbf{\emph{\$isunknown}}, this function return if the value passed is unknown ('\emph{X}' or '\emph{Z}'). So basically when \textbf{\emph{memop\+sync\+end\+i}} is asserted, it must be known the value of its scoreboard id.\\
+The property is using the system function \textbf{\emph{\$isunknown}}, this function return if the value passed is unknown ('\emph{X}' or '\emph{Z}'). So basically when \textbf{\emph{memop\+sync\+end\+i}} is asserted, it must be known the value of its scoreboard id.
 
 
-Then  \textbf{a\+data\+corruption} is the scoreboard like discussed before, and finally there are the reset's ones.\\
-The assertions are reported into the Appendix.\\
+Then  \textbf{a\+data\+corruption} is the scoreboard like discussed before, and finally there are the reset's ones.
+The assertions are reported into the Appendix.
 
 
 
 
 \subsection{Drivers}
-The other tool used to test the submodules is the Driver. It is a file that defines the stimuli and their order. A very defined order of them defines an operation. It is so possible to create the situation in which the DUT will work as expected.\\
+The other tool used to test the submodules is the Driver. It is a file that defines the stimuli and their order. A very defined order of them defines an operation. It is so possible to create the situation in which the DUT will work as expected.
 
 It is important to notice the driver is enabled only when the UVM is configured as ACTIVE.
 
 \subsubsection{Load Management Unit}
-This is the only submodule on which was developed a driver, due to the reduced complexity. In fact, the driver can be very complex when different handshakes are present.\\
+This is the only submodule on which was developed a driver, due to the reduced complexity. In fact, the driver can be very complex when different handshakes are present.
 
 In the next page it is possible to see one of the operations implemented into the driver, as example.
 \newpage
@@ -896,16 +897,16 @@ The operation implemented is the granting of a load request. The code is mainly 
 
 
 \section{Formal Verification}
-As already mentioned, the assertions and the assumptions are treated equally in simulations. This is not true in the formal verification.\\
+As already mentioned, the assertions and the assumptions are treated equally in simulations. This is not true in the formal verification.
 
-The objective of formal veriﬁcation is to mathematically prove properties of a system, usually at design time\cite{verification-book-2018-formal}.\\
-The formal tool, in this project, was only used to prove mathematically the assertions and the assumptions, but there are other uses involving coverage and modeling.\\
+The objective of formal veriﬁcation is to mathematically prove properties of a system, usually at design time\cite{verification-book-2018-formal}.
+The formal tool, in this project, was only used to prove mathematically the assertions and the assumptions, but there are other uses involving coverage and modeling.
 
-To be performed, the formal assertions verification, only needs to instantiate the RTL file and the checkers file. Then it uses the assumptions as drivers for the RTL, finally it tries to prove wrong the assertions using mathematical simplifications.\\
+To be performed, the formal assertions verification, only needs to instantiate the RTL file and the checkers file. Then it uses the assumptions as drivers for the RTL, finally it tries to prove wrong the assertions using mathematical simplifications.
 
-Hence here it is possible to see how the assumptions are working differently. If a property is assumed it can never be proved wrong! Only assertions are to checked.\\
+Hence here it is possible to see how the assumptions are working differently. If a property is assumed it can never be proved wrong! Only assertions are to checked.
 
-The tool used is provided by Mentor, and it is called Questa Propcheck.\\
+The tool used is provided by Mentor, and it is called Questa Propcheck.
 There are different possible outcomes when verifying:
 \begin{itemize}
     \item \textbf{proof}: starting at the initial state, no legal stimulus exists that causes in the assertion to be violated. It is normally proven in the first 10-100 cycles;
@@ -922,7 +923,7 @@ There are different possible outcomes when verifying:
 \end{itemize}
 
 
-This kind of verification was very useful also in terms of documentation. In fact, the material already prepared before the work of this thesis was lacking of some information and trying to test the DUTs formally helped finding blind spots on the specifications.\\
-Indeed the formal tools are a lot based on the assumptions and if only one assumption is missing then it is possible that a lot of assertions are failing.\\
+This kind of verification was very useful also in terms of documentation. In fact, the material already prepared before the work of this thesis was lacking of some information and trying to test the DUTs formally helped finding blind spots on the specifications.
+Indeed the formal tools are a lot based on the assumptions and if only one assumption is missing then it is possible that a lot of assertions are failing.
 
 Let's now move on to the results of the functional and formal analysis.

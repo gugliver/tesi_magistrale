@@ -1,53 +1,54 @@
 \chapter{Results and Considerations}
-In this chapter there will be discussed the results and the material created during all the work of this thesis.\\
+In this chapter there will be discussed the results and the material created during all the work of this thesis.
 
-It is important to say that the results are not the only parameter defining if a good verification work was done or not. In fact building the infrastructure and create documentation are important tasks that every verification engineer will eventually do, and they will produce results in long term, so it could be possible they are not directly correlated to some found bug.\\
+It is important to say that the results are not the only parameter defining if a good verification work was done or not. In fact building the infrastructure and create documentation are important tasks that every verification engineer will eventually do, and they will produce results in long term, so it could be possible they are not directly correlated to some found bug.
 
 
 \section{Found Bugs}
-The thesis was developed while the design and the specifications were on going and so unstable. To synchronize all the work it was used the GitLab structure, creating issues and discussing the problems. A well defined issue was then assigned to a design engineer to fix it.\\
+The thesis was developed while the design and the specifications were on going and so unstable. To synchronize all the work it was used the GitLab structure, creating issues and discussing the problems. A well defined issue was then assigned to a design engineer to fix it.
 
-The majority of the bugs were found on the Load Management Unit. Let's now analyze some of them.\\
+The majority of the bugs were found on the Load Management Unit. Let's now analyze some of them.
 
 \subsubsection{the indexed load bug}
-This one is an issue found using the Formal tools and trying to define better specifications for the Load Management Unit.\\
+This one is an issue found using the Formal tools and trying to define better specifications for the Load Management Unit.
 
 The problem was the following:
-The LMU used the sequence\+id, in particular the \emph{el\+count} field, to identify if the load was strided or indexed. In particular, el\+count contains the number of valid elements being loaded; when this value was el\+count = 1 then the load was considered as indexed.\\
-The issue was presenting because the indexed load should ignore the stride value, and so there is no way to send only one element with a stride, or better, in this case the load would not ignore the stride, as every operation was actually a strided one.\\
+The LMU used the sequence\+id, in particular the \emph{el\+count} field, to identify if the load was strided or indexed. In particular, el\+count contains the number of valid elements being loaded; when this value was el\+count = 1 then the load was considered as indexed.
+The issue was presenting because the indexed load should ignore the stride value, and so there is no way to send only one element with a stride, or better, in this case the load would not ignore the stride, as every operation was actually a strided one.
 
-The better solution for this problem was to create a new signal, \emph{is\+indexed}, to identify an indexed load. The stride will be always ignored when this signal is asserted, and the value of el\+count must be = 1.\\
+The better solution for this problem was to create a new signal, \emph{is\+indexed}, to identify an indexed load. The stride will be always ignored when this signal is asserted, and the value of el\+count must be = 1.
 
 \subsubsection{the load id bug}
-This issue regards the load ids. In the first version when a load was finished it was sent to the \emph{load\+sync\+end\+i} signal to notify that a load was finished.\\
+This issue regards the load ids. In the first version when a load was finished it was sent to the \emph{load\+sync\+end\+i} signal to notify that a load was finished.
 
-It was sent without an identifier to understand which of the two possible loads was finished, so a FIFO was used to end them in order.\\
+It was sent without an identifier to understand which of the two possible loads was finished, so a FIFO was used to end them in order.
 
-This was an issue because the loads should have the possibility to end out-of-order, so a new signal was created: \emph{load\+sync\+end\+sb\+id\+i}. This signal is the id that identifies the load to end.\\
+This was an issue because the loads should have the possibility to end out-of-order, so a new signal was created: \emph{load\+sync\+end\+sb\+id\+i}. This signal is the id that identifies the load to end.
 
 This issue was found analyzing the specs to create the Test Plan.
 
 \subsubsection{the out-of-order load bug}
-This issue regards the out-of-order loads. In the Load Management Unit there is a FIFO handling the load\+ids for the two possible inflight loads.\\
+This issue regards the out-of-order loads. In the Load Management Unit there is a FIFO handling the load\+ids for the two possible inflight loads.
 
-The FIFO was freed of an element only when another one was put as input. But it could have been possible that an already inflight load was into the FIFO, let's say with id = 1, and another load with id = 1 issued. \\
-Having the same id the configurations for the second load would have been overwritten.\\
+The FIFO was freed of an element only when another one was put as input. But it could have been possible that an already inflight load was into the FIFO, let's say with id = 1, and another load with id = 1 issued.
+Having the same id the configurations for the second load would have been overwritten.
 
-This issue was found analyzing the result of two consecutive loads, with same id, but one was strided and another one was indexed. The second load was not considered as indexed failing the condition that says el\+count = 1.\\
+This issue was found analyzing the result of two consecutive loads, with same id, but one was strided and another one was indexed. The second load was not considered as indexed failing the condition that says el\+count = 1.
 
-This was the case of a typical bug finding flow: first the whole big tests fails during a load. Then it is examined using the assertions on the load modules. Exploring the waveform is then possible to find the bug.\\
+This was the case of a typical bug finding flow: first the whole big tests fails during a load. Then it is examined using the assertions on the load modules. Exploring the waveform is then possible to find the bug.
 
 \subsubsection{the after kill bug}
-This bug is related to the validity of the output of the LMU.\\
+This bug is related to the validity of the output of the LMU.
 
-When there is a kill, the entire instruction needs to be killed. But it could be possible to receive valid data for a killed load. This because the kill mechanism needs some time to stop the operation.\\
+When there is a kill, the entire instruction needs to be killed. But it could be possible to receive valid data for a killed load. This because the kill mechanism needs some time to stop the operation.
 
-So the LMU should ignore the input from a killed instruction, but this was not the case. Indeed the validity of the data in output was assumed every time the data was valid in input.\\
+So the LMU should ignore the input from a killed instruction, but this was not the case. Indeed the validity of the data in output was assumed every time the data was valid in input.
 
-It caused the simulation to time out on the next instruction. This because the kill was not issue correctly, so the starting point for the next instruction was not clean. \\
+It caused the simulation to time out on the next instruction. This because the kill was not issue correctly, so the starting point for the next instruction was not clean.
 
-This issue can represent a valid example of why the formality on the assertions in very important.\\
-Consider the following code:\\
+This issue can represent a valid example of why the formality on the assertions in very important.
+Consider the following code:
+
 
 \linespread{1}
 \begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
@@ -61,18 +62,18 @@ else $error('LMU did not compute any output');
 \end{lstlisting}
 \linespread{1.2}
 
-In this case, the assertion is testing if there is \emph{load\+dvalid\+o} when the input is valid. But it does not test if \emph{load\+dvalid\+o} has always a valid \emph{load\+data\+valid\+i} a clock cycle before.\\
+In this case, the assertion is testing if there is \emph{load\+dvalid\+o} when the input is valid. But it does not test if \emph{load\+dvalid\+o} has always a valid \emph{load\+data\+valid\+i} a clock cycle before.
 
-The property as reported is not able to spot the error in this issue, but knowing where is the problem is possible to use the correctness of this assertion to understand the problem.\\
+The property as reported is not able to spot the error in this issue, but knowing where is the problem is possible to use the correctness of this assertion to understand the problem.
 
 \subsubsection{the two loads bug}
-This issue was spotted both in the LMU and in the LB. The modules received two loads with the same id. This led to an assumption error, as every load has an unique id.\\
+This issue was spotted both in the LMU and in the LB. The modules received two loads with the same id. This led to an assumption error, as every load has an unique id.
 
-In reality the problem was not in the Load Management Unit nor in the Load Buffer, but in the memory queue. In fact, this modules is the responsible to hand the ids for each load.\\
+In reality the problem was not in the Load Management Unit nor in the Load Buffer, but in the memory queue. In fact, this modules is the responsible to hand the ids for each load.
 
-Also this issue was found so late in the verification process because was depending on a trigger enabled by the kill.\\
+Also this issue was found so late in the verification process because was depending on a trigger enabled by the kill.
 
-For reference in Figure \ref{2-loads} there is the interface of a simulation, in particular on the waveforms. It is possible to see two loads issue with the same id.\\
+For reference in Figure \ref{2-loads} there is the interface of a simulation, in particular on the waveforms. It is possible to see two loads issue with the same id.
 
 \begin{figure}[H]
     \centering
@@ -83,11 +84,11 @@ For reference in Figure \ref{2-loads} there is the interface of a simulation, in
 
 
 \section{Material Created}
-Other than the found bugs there is also some material created during this thesis.\\
-In particular on the structure to handle the test of the submodules.\\
+Other than the found bugs there is also some material created during this thesis.
+In particular on the structure to handle the test of the submodules.
 
 \subsubsection{UVM}
-A complete UVM was created, to drive and test the Load Management Unit. It has also the possibility to have different tests with different sequences and so constraints.\\
+A complete UVM was created, to drive and test the Load Management Unit. It has also the possibility to have different tests with different sequences and so constraints.
 
 \linespread{1}
 \begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
@@ -109,7 +110,9 @@ class lmu_constrained_test extends lmu_random_test;
 endclass : lmu_constrained_test
 \end{lstlisting}
 \linespread{1.2}
-In this code the base\+test is extended and then it is overridden into the build\+phase the sequence\+item.\\
+In this code the base\+test is extended and then it is overridden into the build\+phase the sequence\+item.
+
+
 \linespread{1}
 \begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
 class lmu_constrained_sequence_item extends lmu_sequence_item;
@@ -125,27 +128,27 @@ class lmu_constrained_sequence_item extends lmu_sequence_item;
 endclass : lmu_constrained_sequence_item
 \end{lstlisting}
 \linespread{1.2}
-In the sequence new constraints are applied. In this case the probability for the operation are defined.\\
+In the sequence new constraints are applied. In this case the probability for the operation are defined.
 
-This kind of structure is very reusable and expandable, also and it can be improved during the whole verification process.\\
+This kind of structure is very reusable and expandable, also and it can be improved during the whole verification process.
 
 \subsubsection{specifications}
-Other than that some documentation was created, on missing specifications and on guides to perform certain kinds of checks. This is very important during a project because allows the other members to partecipate actively.\\
+Other than that some documentation was created, on missing specifications and on guides to perform certain kinds of checks. This is very important during a project because allows the other members to participate actively.
 
-This work was not done in one shot, but required a looped check on the behaviour obtained. The specs and the design were still being developed, this means also the documentation should have been. But this was not always the case, so a constant check (helped also with the formal tool, very useful to define the correct assumptions) helped to maintain the documentation correct.\\
+This work was not done in one shot, but required a looped check on the behaviour obtained. The specs and the design were still being developed, this means also the documentation should have been. But this was not always the case, so a constant check (helped also with the formal tool, very useful to define the correct assumptions) helped to maintain the documentation correct.
 
 \subsubsection{verification plan}
-The verification plan was half prepared when the work of this thesis started. However when starting the creation of the checkers a lot of changes were upcoming, so important modifications were done to the test plan. It was also done following a standard to avoid incompatibilities when using it with other software.\\
-The assertion reported into the Appendix are following the verification plan implemented.\\
+The verification plan was half prepared when the work of this thesis started. However when starting the creation of the checkers a lot of changes were upcoming, so important modifications were done to the test plan. It was also done following a standard to avoid incompatibilities when using it with other software.
+The assertion reported into the Appendix are following the verification plan implemented.
 
 \subsubsection{test plan}
-The test plan for the loads was entirely created during the process of this thesis. It required first some confidence with the load operation, then it was possible to update the simple cases and fill it with interesting corner cases.\\
+The test plan for the loads was entirely created during the process of this thesis. It required first some confidence with the load operation, then it was possible to update the simple cases and fill it with interesting corner cases.
 
-In order to give validity to the test plan it was important to create an easy way to run those tests. For that were done some configurable modalities.\\
+In order to give validity to the test plan it was important to create an easy way to run those tests. For that were done some configurable modalities.
 
 
 \subsubsection{modalities}
-The last contribution was to create the modalities for the implemented tests. Such modalities are way to stimulate the VPU modifying some settings into the UVM. This allows to order the data in specific ways or to force some mechanism inside the VPU. In the code below it is possible to see a couple of them.\\
+The last contribution was to create the modalities for the implemented tests. Such modalities are way to stimulate the VPU modifying some settings into the UVM. This allows to order the data in specific ways or to force some mechanism inside the VPU. In the code below it is possible to see a couple of them.
 
 \linespread{1}
 \begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
@@ -196,8 +199,8 @@ end
 \end{lstlisting}
 \linespread{1.2}
 
-It is possible to see the handling of the element id sent by avispado. In this case it is manipulated the order of the ids, and this will not cause an error as the final result will be the same.\\
+It is possible to see the handling of the element id sent by avispado. In this case it is manipulated the order of the ids, and this will not cause an error as the final result will be the same.
 
-In this way it is possible to stimulate the retry mechanism sending all the elements for the same position into the Load Buffer. There is also another version for the out-of-order retry.\\
+In this way it is possible to stimulate the retry mechanism sending all the elements for the same position into the Load Buffer. There is also another version for the out-of-order retry.
 
 Those modalities can be configured for each test, and so randomized. In this way they can be implemented in the automatic tests.
