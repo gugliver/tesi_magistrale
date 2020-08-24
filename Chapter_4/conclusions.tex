@@ -1,23 +1,27 @@
 \chapter{Conclusions}
 \section{Conclusions}
-Starting from the concepts of the vector extensions and then the VPU it is understandable why this kind of parallel processing is gaining more and more relevance nowadays.\\
-
 In this thesis we have shown all the efforts to verify the behaviour of some DUTs, in particular for the load operations.\\
 
-The first one was the Load Management Unit, and its mechanism was shown to send the data to the buffers. This complexity caused many of issues during the design, in fact a lot of techniques were applied.\\
-It was explained how to drive a component by itself, extrapolating it from a structure, helps to understand its blind spots.\\
-The correct defining of a Verification Plan was very crucial, that allowed to create an high level model to be used as scoreboard.\\
-The verification plan was also important to better define the specifications and, as saw in the founded issues, to add or remove signals were necessary.\\
+Analyzing the results obtained with the Load Management Unit, it is possible to understand why it is crucial to have a good Verification Plan. It was used to test all the specifications and in this way to test their robustness. In different cases it was possible to find some bug using a detailed Verification Plan. It also helped defining an high level model, to create then a scoreboard.\\
 
-The second one was the Load Buffer, which required a different approach. It was too complex to create a complete scoreboard. However it was still possible to create an sort of scoreboard divided in more assertions, predicting the majority of the cases without introducing new errors.\\
-It was also very important define a Test Plan, stressing all the corner cases for the storing of the data. This also required an easy way to be implemented, so it was created as binary file combined with some modalities created ad-hoc.\\
+In particular the usage of the scoreboard is useful when the design is simple. In this thesis the scoreboard was created for the LMU but not for the LB, this because it would have required a verification process on the scoreboard itself.\\
 
-Finally all the results were presented, explaining some of the most common issue that can be founded.\\
-The contribution on the documentation created and on the structure provided was also very important to test the submodules. Indeed this UVM is standalone and was designed to be launched with some simple command launching the correct script.\\
+So there were created scoreboard-like assertions to test the results. However, those assertions are not testing the difficult cases, so it is very hard they will find some hidden bug. \\
+But it is still possible to improve them, creating a complete scoreboard. In fact, all the code created, was created following the philosophy of re-usability and modularity.\\
 
-Thanks to all those techniques it was possible to go on with the design reducing the number of people needed to check for all the bugs.\\
+Then some blind spots were still present when performing long, random tests. This because the randomness needs a lot of time to reach all the corner cases. For that a Test Plan was necessary.\\
+The Test Plan was useful also to define the behaviour in difficult cases.\\
+
+Then the Formal tools were used only to assure the assumptions and the assertions were done correctly. This is not the only usage of this tool, it could be used to optimize a lot the model using mathematical equivalence, but it was too early to apply it in this project.\\
+
+All the tools created are still in use in the current development of the EPI project. Also when a test is reported as passed, the tools are still necessary for the regression tests.
+
+
 
 \section{Future developments}
-Regarding the verification process, there is still some space for future developments. In particular the next steps would be to complete the Verification Plan and add assertions and assumptions for all the submodules. This will require a little bit of time, but then it will be very easy to add the coverage monitoring. \\
+Regarding the verification process, there is still some space for future developments. In particular the next steps would be to complete the Verification Plan and add assertions and assumptions for all the submodules. 
+It would also be useful to have a scoreboard for each submodule and to complete the one for the Load Buffer.\\
+Formal verification could be also used to test all the VPU and then to optimize the design in order to have less logic and so less errors.\\
+Finally it would be good to implement more coverage controls. This will allow to better guide the process and to avoid blind spots.\\
 
-Considering the project in its entirety, it is now important to catch up with the specifications that are being updated by RISC-V. In this way it will be possible to provide an innovative VPU, very useful to be implemented in HCP.
+Considering the project in its entirety, it is now important to catch up with the specifications that are being updated by RISC-V. In this way it will be possible to provide an innovative VPU.

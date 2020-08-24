@@ -5,7 +5,7 @@ It is important to say that the results are not the only parameter defining if a
 
 
 \section{Found Bugs}
-The thesis was developed while the design was on going and so unstable. To synchronize all the work it was used the GitLab structure, creating issues and discussing the problems. A well defined issue was then assigned to a design engineer to fix it.\\
+The thesis was developed while the design and the specifications were on going and so unstable. To synchronize all the work it was used the GitLab structure, creating issues and discussing the problems. A well defined issue was then assigned to a design engineer to fix it.\\
 
 The majority of the bugs were found on the Load Management Unit. Let's now analyze some of them.\\
 
@@ -18,6 +18,15 @@ The issue was presenting because the indexed load should ignore the stride value
 
 The better solution for this problem was to create a new signal, \emph{is\+indexed}, to identify an indexed load. The stride will be always ignored when this signal is asserted, and the value of el\+count must be = 1.\\
 
+\subsubsection{the load id bug}
+This issue regards the load ids. In the first version when a load was finished it was sent to the \emph{load\+sync\+end\+i} signal to notify that a load was finished.\\
+
+It was sent without an identifier to understand which of the two possible loads was finished, so a FIFO was used to end them in order.\\
+
+This was an issue because the loads should have the possibility to end out-of-order, so a new signal was created: \emph{load\+sync\+end\+sb\+id\+i}. This signal is the id that identifies the load to end.\\
+
+This issue was found analyzing the specs to create the Test Plan.
+
 \subsubsection{the out-of-order load bug}
 This issue regards the out-of-order loads. In the Load Management Unit there is a FIFO handling the load\+ids for the two possible inflight loads.\\
 
@@ -29,9 +38,9 @@ This issue was found analyzing the result of two consecutive loads, with same id
 This was the case of a typical bug finding flow: first the whole big tests fails during a load. Then it is examined using the assertions on the load modules. Exploring the waveform is then possible to find the bug.\\
 
 \subsubsection{the after kill bug}
-This bug is related to the validity of the data in output to the LMU.\\
+This bug is related to the validity of the output of the LMU.\\
 
-When there is a kill, the entire instruction needs to be killed. But it could be possible to receive valid data for a killed load. This because the kill needs some time to stop the operation.\\
+When there is a kill, the entire instruction needs to be killed. But it could be possible to receive valid data for a killed load. This because the kill mechanism needs some time to stop the operation.\\
 
 So the LMU should ignore the input from a killed instruction, but this was not the case. Indeed the validity of the data in output was assumed every time the data was valid in input.\\
 
@@ -72,8 +81,9 @@ For reference in Figure \ref{2-loads} there is the interface of a simulation, in
     \label{2-loads}
 \end{figure}
 
+
 \section{Material Created}
-Other than the founded bugs there is also some material created during this thesis.\\
+Other than the found bugs there is also some material created during this thesis.\\
 In particular on the structure to handle the test of the submodules.\\
 
 \subsubsection{UVM}
@@ -122,7 +132,7 @@ This kind of structure is very reusable and expandable, also and it can be impro
 \subsubsection{specifications}
 Other than that some documentation was created, on missing specifications and on guides to perform certain kinds of checks. This is very important during a project because allows the other members to partecipate actively.\\
 
-This work was not done in one shot, but required a looped check on the behaviour obtained. The specs and the design were still being developed, this means also the documentation should have been. But this was not always the case, so a constant check (helped also with the formal tool, very useful to define the correct assumptions) helped maintain the documentation correct.\\
+This work was not done in one shot, but required a looped check on the behaviour obtained. The specs and the design were still being developed, this means also the documentation should have been. But this was not always the case, so a constant check (helped also with the formal tool, very useful to define the correct assumptions) helped to maintain the documentation correct.\\
 
 \subsubsection{verification plan}
 The verification plan was half prepared when the work of this thesis started. However when starting the creation of the checkers a lot of changes were upcoming, so important modifications were done to the test plan. It was also done following a standard to avoid incompatibilities when using it with other software.\\
@@ -135,7 +145,7 @@ In order to give validity to the test plan it was important to create an easy wa
 
 
 \subsubsection{modalities}
-The last contribute was to create the modalities for the implemented tests. In the code below it is possible to see a couple of them.\\
+The last contribution was to create the modalities for the implemented tests. Such modalities are way to stimulate the VPU modifying some settings into the UVM. This allows to order the data in specific ways or to force some mechanism inside the VPU. In the code below it is possible to see a couple of them.\\
 
 \linespread{1}
 \begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
