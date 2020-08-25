@@ -9,16 +9,16 @@ The thesis was developed while the design and the specifications were on going a
 
 The majority of the bugs were found on the Load Management Unit. Let's now analyze some of them.
 
-\subsubsection{the indexed load bug}
+\subsubsection{Indexed load bug}
 This one is an issue found using the Formal tools and trying to define better specifications for the Load Management Unit.
 
 The problem was the following:
 The LMU used the sequence\+id, in particular the \emph{el\+count} field, to identify if the load was strided or indexed. In particular, el\+count contains the number of valid elements being loaded; when this value was el\+count = 1 then the load was considered as indexed.
 The issue was presenting because the indexed load should ignore the stride value, and so there is no way to send only one element with a stride, or better, in this case the load would not ignore the stride, as every operation was actually a strided one.
 
-The better solution for this problem was to create a new signal, \emph{is\+indexed}, to identify an indexed load. The stride will be always ignored when this signal is asserted, and the value of el\+count must be = 1.
+The best solution for this problem was to create a new signal, \emph{is\+indexed}, to identify an indexed load. The stride will be always ignored when this signal is asserted, and the value of el\+count must be = 1.
 
-\subsubsection{the load id bug}
+\subsubsection{Load id bug}
 This issue regards the load ids. In the first version when a load was finished it was sent to the \emph{load\+sync\+end\+i} signal to notify that a load was finished.
 
 It was sent without an identifier to understand which of the two possible loads was finished, so a FIFO was used to end them in order.
@@ -27,7 +27,7 @@ This was an issue because the loads should have the possibility to end out-of-or
 
 This issue was found analyzing the specs to create the Test Plan.
 
-\subsubsection{the out-of-order load bug}
+\subsubsection{Out-of-order load bug}
 This issue regards the out-of-order loads. In the Load Management Unit there is a FIFO handling the load\+ids for the two possible inflight loads.
 
 The FIFO was freed of an element only when another one was put as input. But it could have been possible that an already inflight load was into the FIFO, let's say with id = 1, and another load with id = 1 issued.
@@ -37,7 +37,7 @@ This issue was found analyzing the result of two consecutive loads, with same id
 
 This was the case of a typical bug finding flow: first the whole big tests fails during a load. Then it is examined using the assertions on the load modules. Exploring the waveform is then possible to find the bug.
 
-\subsubsection{the after kill bug}
+\subsubsection{After kill bug}
 This bug is related to the validity of the output of the LMU.
 
 When there is a kill, the entire instruction needs to be killed. But it could be possible to receive valid data for a killed load. This because the kill mechanism needs some time to stop the operation.
@@ -66,7 +66,7 @@ In this case, the assertion is testing if there is \emph{load\+dvalid\+o} when t
 
 The property as reported is not able to spot the error in this issue, but knowing where is the problem is possible to use the correctness of this assertion to understand the problem.
 
-\subsubsection{the two loads bug}
+\subsubsection{Two loads bug}
 This issue was spotted both in the LMU and in the LB. The modules received two loads with the same id. This led to an assumption error, as every load has an unique id.
 
 In reality the problem was not in the Load Management Unit nor in the Load Buffer, but in the memory queue. In fact, this modules is the responsible to hand the ids for each load.

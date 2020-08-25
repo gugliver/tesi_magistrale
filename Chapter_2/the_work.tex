@@ -1,6 +1,6 @@
 \chapter{Contributions}
 Most of the code created to verify the design was written in SystemVerilog. This is a hardware description language, created as an evolution of the Verilog language, adding some extensions as OOP and specific keywords for assertions and coverage.
-Other languages were used for the scripting as Python and tickles.
+Other languages were used for the scripting as Python and tcl.
 
 
 \section{Submodules and Specifications}
@@ -15,10 +15,10 @@ The main focus of this thesis will be on two important submodules in charge of t
 %general
 
 
-This module is in charge of handling the load operations. It receives cache lines form Avispado containing the data for the load. Then, the LMU rearranges the data to distribute it to the vector lanes.
+This module is in charge of handling the load operations. It receives cache lines from Avispado containing the data for the load. Then, the LMU rearranges the data to distribute it to the vector lanes.
 Those can be strided or indexed.
 
-Since the VPU is able to work out-of-order and with two loads in parallel, an ID system is necessary, so each instructions comes with an ID.
+Since the VPU is able to work out-of-order and with two loads in parallel, an ID system is necessary, so each instruction comes with an ID.
 In particular the load operation come with the signal \textbf{seq\+id\+i}.
 This signal identifies the load and contains all the determinant informations about it.
 
@@ -26,7 +26,7 @@ The main elements of this submodules are:
 \begin{itemize}
     \item \textit{Shifter}: it is useful to have the first bit not in the MSB or LSB position.
     
-    \item \textit{Compactor}: it is useful to compact all the valid elements. When the stride = 1 there is no use of the compactor.
+    \item \textit{Compactor}: it is useful to compact all the valid elements. When the stride equals one there is no use of the compactor.
     
     \item \textit{Aligner}: it is in charge to align the elements for the output (lane, bank and sub-bank).
 \end{itemize}
@@ -177,7 +177,7 @@ A simple connection structure is represented in Figure \ref{lb-if}.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.4]{Chapter_2/img/lb-if.png}
+    \includegraphics[scale = 0.6]{Chapter_2/img/lb-if.png}
     \caption{Load Buffer's interfaces}
     \label{lb-if}
 \end{figure}
@@ -899,12 +899,12 @@ The operation implemented is the granting of a load request. The code is mainly 
 \section{Formal Verification}
 As already mentioned, the assertions and the assumptions are treated equally in simulations. This is not true in the formal verification.
 
-The objective of formal veriﬁcation is to mathematically prove properties of a system, usually at design time\cite{verification-book-2018-formal}.
+The objective of formal veriﬁcation is to mathematically prove properties of a system, usually at design time~\cite{verification-book-2018-formal}.
 The formal tool, in this project, was only used to prove mathematically the assertions and the assumptions, but there are other uses involving coverage and modeling.
 
 To be performed, the formal assertions verification, only needs to instantiate the RTL file and the checkers file. Then it uses the assumptions as drivers for the RTL, finally it tries to prove wrong the assertions using mathematical simplifications.
 
-Hence here it is possible to see how the assumptions are working differently. If a property is assumed it can never be proved wrong! Only assertions are to checked.
+Hence here it is possible to see how the assumptions are working differently. If a property is assumed it can never be proved wrong. Only assertions are to checked.
 
 The tool used is provided by Mentor, and it is called Questa Propcheck.
 There are different possible outcomes when verifying:
