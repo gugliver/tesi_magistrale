@@ -204,3 +204,26 @@ It is possible to see the handling of the element id sent by avispado. In this c
 In this way it is possible to stimulate the retry mechanism sending all the elements for the same position into the Load Buffer. There is also another version for the out-of-order retry.
 
 Those modalities can be configured for each test, and so randomized. In this way they can be implemented in the automatic tests.
+
+
+\section{Considerations}
+During the first months of work, we have better defined the specifications and developed the tools to test the design.
+The result were still poor, this because the verification effort is slow in the first phases, when the tools are not stable nor complete.
+
+A night test method was already being created by the BSC Verification Team, using the servers to run up to 50 long simulations per night. The number of instructions was variable and depended on the complexity.
+When the tools, such as assertions and assumptions, were ready, they were implemented into the night run system.
+This allowed to ensure the assumptions and to test the design against the assertions.
+
+Some results were coming up, but it was still not enough. 
+The assertions and assumption were tested using formal tools. A scoreboard was implemented for the LMU and scoreboard-like assertions were implemented for the LB. This helped a lot, because a general result for the submodule was then available. This means it was easier to discriminate whether the problem was in the logic part or into the interface one.
+
+A good part of the bugs found during the period of this thesis was discovered using directly the checkers. The 40\% of the total load-related problems were spotted with this work contribution. Of those errors, almost the 80\% was found using assertions, the rest of them was found studying and formally testing the specifications. 
+%%work here
+Considering only the Load Management Unit to the 56\% of the errors on the Load Management Unit were spotted using the UVM structure, the assertions and the specification review. The expected result was about the 35\% of the bugs found with the checkers~\cite{results}. In this case the number of bugs 
+\
+dici la quantita di errori trovati con i checker e tutto ilr esto.
+
+citi paper ?? e dici li 34\% , in linea quindi. 
+
+se ci riesci a mettere un grafico
+bla bla bla su percentuali e tests
