@@ -275,7 +275,7 @@ Which means that sometimes it is necessary to create some modified settings, to 
 It was created a test plan to stress the load operations. Those are affecting a lot of submodules of the VPU, but the focus will be on the Load Buffer and on the LMU, mainly.\\
 Let's now analyze some of the created tests.
 
-\subsubsection{test on consecutive elements}
+\subsubsection{Test on consecutive elements}
 The first test planned was a simple test about consecutive elements, this means all the elements are sent in order. Of course this is a simple case, and it is thought to test if all the chain to the effective load are working. In fact, it is a regression test.\\
 
 The only constraint meant to be in this test is the sequentiality of the elements.\\
@@ -289,7 +289,7 @@ An example could be the one represented in Figure \ref{cache-to-lb-seq-ex}.
     \label{cache-to-lb-seq-ex}
 \end{figure}
 
-\subsubsection{test on random values}
+\subsubsection{Test on random values}
 The second kind of test to implement is for sure the random test. This will stress the ability to use different elements ID and different loads at the same time. In this way all the handling for the positions, calculated based on the load and on the element ID, is stressed.\\
 
 It was created a special modality to constrain the randomness to the possible values. This was implemented in the UVM using the configurations for the sequence.\\
@@ -312,7 +312,7 @@ It is also possible to have inputs from two loads, as in Figure \ref{cache-to-lb
     \label{cache-to-lb-ooo-ex}
 \end{figure}
 
-\subsubsection{test on splitted elements} 
+\subsubsection{Test on splitted elements} 
 A very interesting case is revealed when studying the positions.\\
 Let's take into account a line of elements sent by the LMU to the Load Buffer. In this case the SEW needs to be different from 64, so the case will use SEW = 32.\\
 
@@ -369,7 +369,7 @@ RVTEST_DATA (
 The test is initialized with a macro, defining the SEW = 32 and the size in bit = 512.\\
 Then the data (the one that follows the instructions) is loaded into a register as address, and is summed an offset of \emph{0x3c}, equal to 60 in decimal.\\ This is the exact value needed to have the first sent element id = 65. As the number of elements will be 512/32 = 16 the element ids will go from 65 to 80.\\
 
-\subsubsection{test on retries}
+\subsubsection{Test on retries}
 The last test typology is about the retry mechanism. This occurs when all the three lines are filled with an element in the same position, and then a fourth elements arrives, this means that the Load Buffer does not have another position for one of the elements, thus one of the elements needs to go back to the sender and a new request is made.\\
 
 Considering SEW = 64, there are different versions about this test: it can be a simple in order retry with elements 0-40-80-120-... as inputs, it can be out of order as 0-40-120-80-..., or it can be with two different loads.\\
