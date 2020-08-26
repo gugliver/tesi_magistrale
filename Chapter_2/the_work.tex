@@ -258,17 +258,12 @@ During this process it is possible \emph{fsm\+read\+en\+buf\+i} arrives and the 
 In order to have a better approach with the verification of a design, it is important to define a Verification Plan.\\
 There are many ways to write it. In this specific case, the Verification Team was working along with the Design Team to produce better specifications and not only to test the completed design. This means that the Verification Plan is done following the general rules to have a good value in future, but it is not entirely defined a priori.\\
 
-It was previously defined to create the UVM structure and led to the development of all the tools for the verification. \\
-Defining the approach to have does also mean defining the tools that will be used, in fact, many different of them were created:
-\begin{itemize}
-    \item \textbf{UVM}: is the structure described earlier, used to stimulate and test the DUT;
-    
-    \item \textbf{checkers}: are mainly composed by assertions, some really powerful statements used to define the constraints of the DUT's behaviour. \\
-    They can be used in different approaches. Later on this chapter it will be discussed their use as Functional or Formal tools;
-    
-    \item \textbf{coverage}: it is useful to refine the plan. It can be used to know were to work, and were there are tests to perform when trying to reach all the possible cases.
-    
-\end{itemize}
+It was previously defined to create the UVM structure led to the development of all the tools for the verification. \\
+Defining the approach to have does also mean defining the tools that will be used, in fact, many different of them were created, such as an \textbf{UVM}, \textbf{checkers} for 
+%%TODO
+
+
+
 \subsection{Test Plan}
 In order to have a good coverage of the cases, and good reports to find bugs, it is very important to have a test plan.\\
 
@@ -400,7 +395,7 @@ The out-of-order example is represented in Figure \ref{cache-to-lb-ooo-ret-ex}. 
 
 
 
-\section{Functional Verification}
+\section{Verification Process}
 The test executed are just the base for the verification. The tests can only define some functionalities, but to test all of them a complete functional verification is required.\\
 
 
@@ -507,39 +502,17 @@ Using the element\+id and the corresponding bank (based on the SEW), it is possi
 
 
 \subsection{Checkers}
-A checker can be composed of many tools, they main one are the Assertions.
+In order to connect them to the whole structure the binding method was used: basically, when a file containing the checker is created, it is compiled with a bind option to connect it to an RTL file. In this way the files can be kept separate and the Design Team and the Verification Team can work together on different files. \cite{binding}
 
-An assertion is a simple check on a defined functionality. It is wanted to receive an error when an assertion fails.
-It is mainly composed by two parts both of them conditions, but they act differently and are time related. The first part is a condition to \textit{"fire"}, this means when the condition is true the assertions starts checking for the second part.\cite{verification-book-2016}
-
-The second part is another check on some condition, and can reveal the result of the check. At this point the possible results are \textit{True} or \textit{False}.
-
-Both of them can be time consuming, and conditions on the edge are possible.
-It is also possible to create \textit{properties} and \textit{sequences} and then embed them into the assertions, in this way it is possible to reuse those parts.
-
-To connect them to the whole structure it was used the binding method: basically when a file containing the checker is created, is then compiled with a bind option to connect it to an RTL file. In this way the files can be kept separate and the design and verification teams can work together on different files. \cite{binding}
-
-Let's now see the basic structure of an assertion.
-\bigskip
-
-\linespread{1}
-\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
-property property_1;
-    @(posedge clk_i)
-	a |-> b;
-endproperty : property_1
-
-assertion_1 : assert property ( disable_iff(rst) property_1) else $error("")
-
+\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=l, numbers=none]
+$PATH_LB/LoadBuffer.sv -mfcu -cuname $PATH_LBC/LoadBuffer_checker.svh
 \end{lstlisting}
-\linespread{1.2}
-\bigskip
+spiegazione
+%TODO
+\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=l, numbers=none]
+bind LoadBuffer LoadBuffer_checker bind_LoadBuffer_checker (.*);
+\end{lstlisting}
 
-Basically if \emph{a} is HIGH(1) then it is expected that \emph{b} is also HIGH(1).
-
-The functionality is expressed into the property, then it is asserted into the assertion. It could be possible to recall tasks or processes, in this way a certain computation is possible.
-It can also provide an error message.
-When the reset is asserted the assertion is disabled. This means the assertion needs now to be re-fired with a new starting condition.
 
 \subsubsection{Load Management Unit's assertions}
 The main focus was on the calculated result and on the handshake with the other components.
@@ -896,34 +869,6 @@ The operation implemented is the granting of a load request. The code is mainly 
 
 
 
-\section{Formal Verification}
-As already mentioned, the assertions and the assumptions are treated equally in simulations. This is not true in the formal verification.
 
-The objective of formal veriﬁcation is to mathematically prove properties of a system, usually at design time~\cite{verification-book-2018-formal}.
-The formal tool, in this project, was only used to prove mathematically the assertions and the assumptions, but there are other uses involving coverage and modeling.
-
-To be performed, the formal assertions verification, only needs to instantiate the RTL file and the checkers file. Then it uses the assumptions as drivers for the RTL, finally it tries to prove wrong the assertions using mathematical simplifications.
-
-Hence here it is possible to see how the assumptions are working differently. If a property is assumed it can never be proved wrong. Only assertions are to checked.
-
-The tool used is provided by Mentor, and it is called Questa Propcheck.
-There are different possible outcomes when verifying:
-\begin{itemize}
-    \item \textbf{proof}: starting at the initial state, no legal stimulus exists that causes in the assertion to be violated. It is normally proven in the first 10-100 cycles;
-    
-    \item \textbf{firing}: a counterexample to the assertion exist, this means there is a bug in design, or the specifications are not well defined;
-    
-    \item \textbf{firing with warnings}: a counterexample to the assertion exist, but it uses not primary inputs. This means there are uncontrolled internal values that cause a fail;
-    
-    \item \textbf{inconclusive}: the formal analysis timed out before demonstrating the assertion. This could be also meaning the complexity is too high to be elaborated with math tools; 
-    
-    \item \textbf{bounded proof}: a proof exists to the assertion but only to a certain depth;
-    
-    \item \textbf{vacuous proof}: the case is vacuously proven when the assertion is always true given the assumptions. This means probably there is some mistake into the assumptions or the assertions.
-\end{itemize}
-
-
-This kind of verification was very useful also in terms of documentation. In fact, the material already prepared before the work of this thesis was lacking of some information and trying to test the DUTs formally helped finding blind spots on the specifications.
-Indeed the formal tools are a lot based on the assumptions and if only one assumption is missing then it is possible that a lot of assertions are failing.
 
 Let's now move on to the results of the functional and formal analysis.
