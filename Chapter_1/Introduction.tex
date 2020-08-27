@@ -176,6 +176,16 @@ Beside the base instructions that we can expect from a Vector Architecture (such
 Finally, all those operations can be \textit{masked}. The masking is a common operation when there is branching or when complex patterns emerge.
 Normally one bit of the mask represent a whole word or byte into the vector. This bit indicates if the operation of the instruction should be performed for that specific element of the vector.
 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.9]{Chapter_1/img/masking.png}
+    \caption{8 bit mask, masking a 64 bit vector}
+    \label{masking}
+\end{figure}
+
+In Figure \ref{masking} there is an example of an 8-bit vector masking a 64-bit vector. Each bit of the mask corresponds to 8 bit of the vector.
+
 \subsection{Verification}
 As the technology scales down, conflicting requirements for high performance, low-power and area arise. 
 This lead to a complex design and to elevate the costs.
@@ -243,30 +253,37 @@ It can also provide an error message to better identify the problem during simul
 When the signals into the \emph{disable\+iff} function are asserted (in the example above it is the \emph{rst} signal) the assertion is disabled. This means that the assertion does now need to be re-fired with a new starting condition.
 
 
+
+
 \subsubsection{Functional verification}
 The functional verification needs to verify whether the functionalities described into the specifications are met into the design. In order to verify functionally, the functionalities need to be defined. This is a very important part of the process, as this translation is never perfect and often highlights some critical points into the specs, such as omissions or inaccuracies. The functional verification is performed using simulations, this means that time is required to simulate the design behaviour and to check it against its specifications.
 
 In functional verification the assertions and the assumptions are implemented in the simulation process to verify to correctness of the RTL design.
 
-In Figure %figura TODO
-it is possible to visualize how assertions and assumptions are used to verify functionally the RTL design.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.55]{Chapter_1/img/ass-ass.png}
+    \caption{Assertions and assumptions into an RTL deisng}
+    \label{ass-ass}
+\end{figure}
+
+In Figure \ref{ass-ass} it is possible to visualize how assertions and assumptions are used to verify functionally the RTL design.
+The assumptions are mainly checking the inputs and the assertions are mainly checking the outputs. It is possible to notice that the assertions for a DUT can be considered as assumptions for another one.
 
 \subsubsection{Formal verification}
 The formal verification can be done in different ways: \textit{theorem proving}, that tries to prove the equivalence between specifications and design by using mathematical reasoning; \textit{equivalence checking}, useful when performing optimization to the design, trying to demonstrate that the various versions are mathematically equivalent; and \textit{model checking}, which try to find counter example on the behaviour of the design, and, if a counterexample exists, the Formal tool provides an example of the specific case to demonstrate the falsity. It is performed using \emph{assumptions} to assume the design behaviour and then using \emph{assertions} to test it.
 
 
-As already mentioned, the assertions and the assumptions in simulations are treated equally . This is not true in the formal verification.
-
-The aim of formal veriﬁcation is to mathematically prove properties of a system, usually at design time~\cite{verification-book-2018-formal}.
-The formal tool, in this project, was only used to perform model checking.
-
+As already mentioned, the assertions and the assumptions in simulations are treated equally . This is not true in the formal verification~\cite{verification-book-2018-formal}.
 In order to be performed, the formal assertions verification only needs to instantiate the RTL file and the checkers file. Then it uses the assumptions as drivers for the RTL, and finally it tries to prove wrong the assertions using mathematical simplifications.
-
 Hence, here it is possible to see how the assumptions work differently. If a property is assumed it can never be proved wrong. Only assertions need to be checked.
-
+The formal tool, in this project, was only used to perform model checking.
 The tool used is provided by Mentor, and it is called Questa Propcheck.
 There are different possible outcomes occurring while verifying:
 \begin{itemize}
+    \item \textbf{vacuous proof}: the case is vacuously proven when the assertion is always true given the assumptions. This means probably there is some mistake into the assumptions or the assertions;
+    
     \item \textbf{proof}: starting at the initial state, no legal stimulus exists that causes in the assertion to be violated. It is normally proven in the first 10-100 cycles;
     
     \item \textbf{firing}: a counterexample to the assertion exist, this means that there is a bug in design, or the specifications are not well defined;
@@ -275,14 +292,19 @@ There are different possible outcomes occurring while verifying:
     
     \item \textbf{inconclusive}: the formal analysis timed out before demonstrating the assertion. This could be also meaning the complexity is too high to be elaborated with math tools; 
     
-    \item \textbf{bounded proof}: a proof exists to the assertion but only to a certain depth;
-    
-    \item \textbf{vacuous proof}: the case is vacuously proven when the assertion is always true given the assumptions. This means probably there is some mistake into the assumptions or the assertions.
 \end{itemize}
 
-In Figure %figure complexity/time TODO
-are graphically summarized all the possible outcomes previously exposed.
+In Figure \ref{for-com} are graphically summarized all the possible outcomes previously exposed.
+It is shown how the time required to prove an assertion grows exponentially with the depth of the analysis.
+There are also illustrated the various "zones" in which the result is produced.
 
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[scale = 0.65]{Chapter_1/img/for-com.png}
+    \caption{Growing complexity and expected results in formal verification}
+    \label{for-com}
+\end{figure}
 
 
 
@@ -364,7 +386,7 @@ It is also important to point out how the memory is organized in order to unders
 The vectors are distributed into the different lanes. Indeed it is possible to say the Vector are sliced into the lanes, this means that an efficient organization is needed in order to understand where to put the right data.
 
 
-According to the RISC-V V-extension, vector elements can have different sizes. The parameter that describes the size of an element is the SEW (Standard Element Width). This is determined by the CSR (Control and Status Register) named vsew. The maximum supported SEW into the EPI project is 64 bit. Also the maximum VLEN is equal to 16384 bit, so 2kB.
+According to the RISC-V V-extension, vector elements can have different sizes. The parameter that describes the size of an element is the Standard Element Width (SEW). This is determined by the Control and Status Register (CSR) named \emph{vsew}. The maximum supported SEW into the EPI project is 64 bit. Also the maximum VLEN is equal to 16384 bit, so 2kB.
 
 The number of elements a vector registers holds is given by VLEN/SEW, according to the Table \ref{sew-el}:
 
@@ -392,17 +414,15 @@ In Figure \ref{vrf-64} it is possible to see the structure used for SEW = 64 bit
     \label{vrf-64}
 \end{figure}
 
-Notice that the sub-banks are more than 1 only when the SEW is not 64. \\
+Notice that the sub-banks are more than 1 only when the SEW is not equal to 64. \\
 
-In Figure \ref{vrf-32} it is possible to identify the sub-banks as subdivision of a bank when SEW is not 64.
+In Figure \ref{vrf-32} it is possible to identify the sub-banks as subdivision of a bank.
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.7]{Chapter_1/img/vrf-32.png}
     \caption{VRF with SEW = 32}
     \label{vrf-32}
 \end{figure}
-
-Let's focus now on the submodules on which the work of this thesis was done.
 
 
 

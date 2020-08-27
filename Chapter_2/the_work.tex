@@ -1,39 +1,30 @@
 \chapter{Contributions}
-Most of the code created to verify the design was written in SystemVerilog. This is a hardware description language, created as an evolution of the Verilog language, adding some extensions as OOP and specific keywords for assertions and coverage.
-Other languages were used for the scripting as Python and tcl.
-
 
 \section{Submodules and Specifications}
-%%talk about the specs
 
+The main focus of this thesis will be on two important submodules in charge of the load instructions:
 
-The main focus of this thesis will be on two important submodules in charge of their load instructions:
-
-\textit{Load Buffer} and \textit{Load Management Unit}.
+\textit{Load Management Unit} and \textit{Load Buffer}.
 
 \subsection{Load Management Unit}
-%general
 
 
 This module is in charge of handling the load operations. It receives cache lines from Avispado containing the data for the load. Then, the LMU rearranges the data to distribute it to the vector lanes.
-Those can be strided or indexed.
-
+The load operation can be strided or indexed.
 Since the VPU is able to work out-of-order and with two loads in parallel, an ID system is necessary, so each instruction comes with an ID.
-In particular the load operation come with the signal \textbf{seq\+id\+i}.
+In particular the load operation comes with the signal \emph{seq\+id\+i}.
 This signal identifies the load and contains all the determinant informations about it.
 
 The main elements of this submodules are:
 \begin{itemize}
-    \item \textit{Shifter}: it is useful to have the first bit not in the MSB or LSB position.
+    \item \textbf{Shifter}: it is useful to have the first bit in other position than the MSB or the LSB position;
     
-    \item \textit{Compactor}: it is useful to compact all the valid elements. When the stride equals one there is no use of the compactor.
+    \item \textbf{Compactor}: it is useful to compact all the valid elements. When the stride is equal to one the compactor is not used;
     
-    \item \textit{Aligner}: it is in charge to align the elements for the output (lane, bank and sub-bank).
+    \item \textbf{Aligner}: it is in charge to align correctly the elements for the output (lane, bank and sub-bank).
 \end{itemize}
 
-\bigskip
 
-%params
 The main parameters defining this submodule are:
 \begin{itemize}
     \item \textbf{MEM\+DATA\+WIDTH}: width of the chunk of data received from Avispado. The standard value is \textit{512}.
@@ -48,8 +39,6 @@ The main parameters defining this submodule are:
 \end{itemize}
 
 \subsubsection{Interface}
-%interface
-%%%%%%%%%%%%%%%%TABLE%%%%%%%%%%%%%%%%%%%%%%%
 
 \begin{table}[H]
 \centering
@@ -59,7 +48,7 @@ The main parameters defining this submodule are:
 \multicolumn{1}{|c|}{\cellcolor[HTML]{EFEFEF}Signal} & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}Description}                      \\ \hline
 load\+granted\+i    & a load is granted,\\
                     & it will have a certain sew\+i and stride\+i\\ \hline
-load\+granted\+sb\+id\+i    & the id for the issued Load,\\
+load\+granted\+sb\+id\+i    & the id for the issued load,\\
                             & can be issued up to 2 loads\\ \hline
 indexed\+load\+granted\+i   & the granted load is indexed \\ \hline
 load\+sync\+end\+i          & indicates if the load is ended\\ \hline
@@ -71,6 +60,16 @@ mask\+valid\+i              & validity of mask\+i signal\\ \hline
 mask\+i                     & mask bit to mask load\+data\+i\\ \hline
 sew\+i                      & identifies the size of each vector element\\ \hline
 stride\+i                   & stride indicated in bytes\\ \hline
+\end{tabular}
+\caption{Input signals to the LMU}
+\label{I-LMU}
+\end{table}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\rowcolor[HTML]{EFEFEF} 
+\multicolumn{1}{|c|}{\cellcolor[HTML]{EFEFEF}Signal} & \multicolumn{1}{c|}{\cellcolor[HTML]{EFEFEF}Description}                  \\ \hline
 load\+data\+o               & output data sent to the lanes\\ \hline
 load\+dvalid\+o             & indicates if the data in load\+data\+o bus is valid\\ \hline
 mask\+o                     & mask bit to mask load\+data\+o\\
@@ -84,35 +83,39 @@ vstart\+next\+o             & identifies the last valid element \\
 min\+element\+id\+idx\+o    & index of the first valid \\
                             & element in elements\+ids\+o of each lane.\\ \hline
 \end{tabular}
+\caption{Output signals to the LMU}
+\label{O-LMU}
 \end{table}
 
+In the Tables \ref{I-LMU} and \ref{O-LMU} are reported respectively the input and the output signals of the LMU, together with their descritpion.
 
 \subsubsection{Sequence ID}
-The sequence id ID is necessary as the memory system does not guarantee the in-order arrival of elements. So this signal contains all the info needed to correctly elaborate the data.\\
+The sequence id ID is necessary as the memory system does not guarantee the in-order arrival of elements. Hence, this signal contains all the informations needed to correctly elaborate the data.
 
-It is composed as:
+The \emph{seq\+id\+i} is composed by:
 \begin{itemize}
-    \item \textbf{seq\+id\+i[4:0]} = \textit{v\+reg}, identifies the logical vector register that the data should be written to;
+    \item \textbf{seq\+id\+i[4:0]} = \textit{v\+reg}, identifies the logical vector register in which the data should be written;
     
     \item \textbf{seq\+id\+i[15:5]} = \textit{el\+id}, identifies the lowest valid element id contained in the chunk of data being transmitted;
     
-    \item \textbf{seq\+id\+i[21:16]} = \textit{el\+off}, identifies the offset in the chunk of data being transmitted.
+    \item \textbf{seq\+id\+i[21:16]} = \textit{el\+off}, identifies the offset in the chunk of data being transmitted;
     
     \item \textbf{seq\+id\+i[28:22]} = \textit{el\+count}, identifies the number of valid elements being transmitted. Masked elements are valid elements; 
     
-    \item \textbf{seq\+id\+i[32:29]} = \textit{sb\+id}, sb\+id of the load instruction that requested the data.
+    \item \textbf{seq\+id\+i[32:29]} = \textit{sb\+id}, scoreboard id of the load instruction that requesteds the data.
 \end{itemize}
 
 
 \subsubsection{Handshake}
-The handshake protocol with the different components is as important as the data manipulation. Following, there is a simple example with stride equal to 1 and offset = 0 (so, no manipulation on the data in input).
+The handshake protocol with the different components is as important as the data manipulation. Following, there is a simple example with the stride value equal to 1 and offset equal to 0 (meaning that there is no manipulation on the input data).
+The procedure for the handshake is the following:
 
 \begin{enumerate}
-    \item Up to 2 load are granted from the Memory Unit with the load\+granted\+i signal, and the information of SEW and stride of the relative instruction are passed;
+    \item Up to 2 load are granted by memory queue with the \emph{load\+granted\+i} signal. The SEW and stride information of the relative instruction are passed;
     
-    \item Avispado sends the data and the seq\+id\+i with its seq\+id;
+    \item Avispado sends the data and the seq\+id\+i with its \emph{seq\+id\+i};
     
-    \item The next clock cycle the data is on the output for the Vector Lane;
+    \item The next clock cycle, the data is at the output of the LMU towards the Vector Lane;
     
     \item When a load is finished, another load can be granted.
 \end{enumerate}
@@ -124,13 +127,12 @@ The handshake protocol with the different components is as important as the data
     \label{lmu-time}
 \end{figure}
 
-In Figure \ref{lmu-time} it is possible to see an example for a unit-strided load. This is a simple load, and its behaviour will be discussed in the following section.
+In Figure \ref{lmu-time} it is possible to see an example of an unit-strided load. This is a simple load, and its behaviour is discussed in the following section.
 
 \subsubsection{Strided Load}
-In this case all the valid elements are separated by a constant stride. If the stride is equal to 1, then it is called unit-stride.\\
-
-Figure \ref{lmu-strided} shows how the LMU works in this case.\\
-The parameters (defined in the seq\+id\+i) are defining the elements to consider.
+In this case all the valid elements are separated by a constant stride. If the stride is equal to 1, then it is called unit-strided load.
+Figure \ref{lmu-strided} shows how the LMU works in this case.
+The parameters (defined in the \emph{seq\+id\+i}) are defining the elements to consider.
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.25]{Chapter_2/img/lmu-strided.png}
@@ -139,9 +141,8 @@ The parameters (defined in the seq\+id\+i) are defining the elements to consider
 \end{figure}
 
 \subsubsection{Indexed Load}
-It is also possible to load values in an indexed way. By design was chosen that only one valid element at time is sent, and so el\+count needs to be = 1. If the indexed load is performed with many valid elements, the cache lines is sent multiple times with only one valid element each time.\\
-
-In Figure \ref{lmu-indexed} it is possible to see an example for a simple indexed load.
+It is also possible to load values in an indexed way. By design, it was chosen that only one valid element at time can be sent, and so \emph{el\+count} needs to be equal to 1. If the indexed load is requested with many valid elements, the cache line is sent multiple times with only one valid element each time.
+In Figure \ref{lmu-indexed} it is possible to see an example of a simple indexed load.
 
 \begin{figure}[H]
     \centering
@@ -151,10 +152,8 @@ In Figure \ref{lmu-indexed} it is possible to see an example for a simple indexe
 \end{figure}
 
 \subsubsection{Masked Load}
-All the load operations can be masked. This does not change the number of valid elements, but at the end of the process they will not be sent.\\
-
-
-In Figure \ref{lmu-masked-stride} it is possible to see an example of the simple strided-load used before, but this time, with a mask.
+All the load operations can be masked. This operation does not change the number of valid elements, but if an elements is masked, at the end of the process it will not be sent.
+In Figure \ref{lmu-masked-stride} it is possible to see an example of the simple strided-load shown before, but this time, with a mask.
 
 \begin{figure}[H]
     \centering
@@ -164,14 +163,14 @@ In Figure \ref{lmu-masked-stride} it is possible to see an example of the simple
 \end{figure}
 
 \subsection{Load Buffer}
-The second submodule that is mainly in charge of the load operation is the Load Buffer.\\
-Its function is writing the data sent by Avispado to the Vector Register File. The data can come from different instructions inflight, and the Buffer will always try to optimize and group the data to write.\\
+The second submodule that is mainly in charge of the load operation is the Load Buffer.
+Its function is writing the data sent by Avispado to the Vector Register File. The data can come from different instructions inflight, and the Buffer will always try to optimize and group the data to write.
 
-The LMU receives full cache lines of 512 bit from Avispado and forwards them to the corresponding Load Buffer for each lane (64 bit max per lane), depending on the seq\+id\+i. The position of the data into the LB will be determined by the element ID.\\
+The LMU receives full cache lines of 512 bit from Avispado and forwards them to the corresponding Load Buffer for each lane (64 bit max per lane), depending on the \emph{seq\+id\+i}. The position of the data into the LB will be determined by the element ID.
+Up to two loads can be inflight, but their associated cache lines can arrive out-of-order, although the implementation will be parameterized to accept \emph{N} loads in flight.
 
-Up to two loads can be inflight, but their associated cache lines can arrive out-of-order, although the implementation will be parameterized to accept N loads in flight.
 \subsubsection{Interface}
-The Load Buffer is connected with a lot of modules. From the \emph{Vector Lane} it receives the clock and the reset and communicates if there is a load inflight; with the \emph{LMU} it exchanges all the data; from \emph{Avispado} it knows if the operation has terminated; the requested handshake is handled with the \emph{Memory Queue}; the data goes to the \emph{Vector Register File}, synchronizing with the internal \emph{Finite State Machine}; finally it can commit the result with the \emph{Commit Unit}.\\
+The Load Buffer is connected with a lot of modules. From the \emph{Vector Lane} it receives the clock and the reset and communicates if there is a load inflight; with the \emph{LMU} it exchanges all the data; from \emph{Avispado} it knows if the operation has terminated; the requested handshake is handled with the \emph{Memory Queue}; the data goes to the \emph{Vector Register File}, synchronizing with the internal \emph{Finite State Machine}; finally it can commit the result with the \emph{Commit Unit}.
 
 A simple connection structure is represented in Figure \ref{lb-if}.
 
@@ -183,31 +182,31 @@ A simple connection structure is represented in Figure \ref{lb-if}.
 \end{figure}
 
 \subsubsection{Structure}
-There is a Load Buffer of each lane and there are 3 layers to buffer the elements. The layers are divided by the concept of Element Group. In fact, the elements cannot be disposed in every combination, but every element, based on its element ID, has an exact location (based also on the SEW). The position  of the elements follows the structure of the VRF explained in the first Chapter.\\
+There is a Load Buffer of each lane and there are three layers to buffer the elements. The layers are divided by the concept of Element Group. In fact, the elements cannot be disposed in every combination, but every element, based on its element ID, has an exact location (based also on the SEW). The position  of the elements follows the structure of the VRF explained in the first Chapter.
 
-In Figure \ref{gen-ex} it is possible to see a general connection between the LMU and the various Load Buffers.\\
+In Figure \ref{gen-ex} it is possible to see a general connection between the LMU and the various Load Buffers.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.5]{Chapter_2/img/cache-to-lb-gen-ex.png}
+    \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-gen-ex.png}
     \caption{Data through the LB}
     \label{gen-ex}
 \end{figure}
 
 
-In Figure \ref{lb-genz} there is an example for the disposition of the elements of 64 bit. It is also important to say that the number of bits for each element group stays the same, this means that the number of elements depends on the SEW.\\
+In Figure \ref{lb-genz} there is an example of the disposition of the elements of 64 bit. It is also important to say that the number of bits for each element group stays the same, this means that the number of elements depends on the SEW.
 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.4]{Chapter_2/img/cache-to-lb-genz-ex.png}
+    \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-genz-ex.png}
     \caption{General case for the LB}
     \label{lb-genz}
 \end{figure}
 
 The Load Buffers are mainly composed of 4 parts:
 \begin{itemize}
-    \item \emph{Elements}: the elements in the buffer, they are always 512 bit, so 5 elements with SEW = 64, 10 elements with SEW = 32 and so on;
+    \item \emph{Elements}: are the values stored into the buffer. The elements are always 512 bit long, so there are 5 elements with SEW = 64, 10 elements with SEW = 32 and so on;
     
     \item \emph{Identifier}: identifies the elements coming from the young or the old load;
     
@@ -217,22 +216,20 @@ The Load Buffers are mainly composed of 4 parts:
 \end{itemize}
 
 \subsubsection{Retry}
-There are cases in which three buffers are not enough to store all the elements. It is possible that more than three elements try to occupy the same position and so they can cause a problem.\\
-
-This case is handled with a retry mechanism:\\
-one of the elements is discarded and a new request is made to Avispado, to notify the retry.\\
-
-Is important to understand the element to discard when there is a retry, whether it is a new or an old one.\\
+There are cases in which three buffers are not enough to store all the elements. It is possible that more than three elements try to occupy the same position and thus causing a problem.
+This case is handled with a retry mechanism:
+one of the elements is discarded and a new request is made to Avispado, to notify the retry.
+It is important to identify the element to discard when there is a retry, whether it is a new or an old one.
 
 There are 4 possible cases:
 \begin{enumerate}
-    \item if the incoming data comes from the \emph{young load} and the buffer does only contain \emph{data from the same load}, it will be discarded the data with the highest element group;
+    \item if the incoming data comes from the \emph{young load} and the buffer does only contain \emph{data from the same load}, the data with the highest element group will be discarded;
     
-    \item if the incoming data comes from the \emph{young load} and the buffer contains \emph{data from both the oldest and youngest loads}, it will discard the incoming data;
+    \item if the incoming data comes from the \emph{young load} and the buffer contains \emph{data from both the oldest and youngest loads}, the incoming data will be discarded;
     
-    \item if the incoming data comes from the \emph{old load} and the buffer only contains \emph{data from the same load}, it will be discarded the data with the highest element group;
+    \item if the incoming data comes from the \emph{old load} and the buffer only contains \emph{data from the same load}, the data with the highest element group will be discarded;
     
-    \item if the incoming data comes from the \emph{old load} and the buffer contain \emph{data from both the oldest and youngest loads}, it will discard the data inside the buffer, the one from the young load.
+    \item if the incoming data comes from the \emph{old load} and the buffer contain \emph{data from both the oldest and youngest loads}, the data inside the buffer, the one from the young load will be discarded.
 \end{enumerate}
 
 
@@ -248,53 +245,48 @@ In Figure \ref{lb-flow} it is possible to see a simple scheme of the LB's behavi
     \label{lb-flow}
 \end{figure}
 
-Following the scheme it is possible to understand the main working flow of the Load Buffer.\\
-When it receives a request it can grant it if the number of load inflight is less than two.\\
-For each request the LB can receive the data, and in case activate the retry mechanism, or it can receive a \emph{memop\+sync\+end} and then continue the process to finish the load.\\
-During this process it is possible \emph{fsm\+read\+en\+buf\+i} arrives and the LB can write the data in output.\\
+Following the scheme it is possible to understand the main working flow of the Load Buffer.
+When the Load Buffer receives a request, it is granted if the number of loads inflight is less than two.
+For each request the LB can receive the data, activating the retry mechanism if necessary, or it can receive a \emph{memop\+sync\+end} and then continue the process to finish the load.
+During this process it is possible that \emph{fsm\+read\+en\+buf\+i} is asserted by the internal Finite State Machine of the Vector Lane, thus the LB can write the data in output.
 
 
 \section{Verification Plan}
-In order to have a better approach with the verification of a design, it is important to define a Verification Plan.\\
-There are many ways to write it. In this specific case, the Verification Team was working along with the Design Team to produce better specifications and not only to test the completed design. This means that the Verification Plan is done following the general rules to have a good value in future, but it is not entirely defined a priori.\\
+In order to have a better approach with the verification of a design, it is important to define a Verification Plan.
+There are many ways to write it. In this specific case, the Verification Team was working along with the Design Team to produce better specifications and not only to test the completed design. This means that the Verification Plan is done following the general rules to have a good value in future, but it is not entirely defined a priori.
 
-It was previously defined to create the UVM structure led to the development of all the tools for the verification. \\
-Defining the approach to have does also mean defining the tools that will be used, in fact, many different of them were created, such as an \textbf{UVM}, \textbf{checkers} for 
-%%TODO
-
+Defining the approach to have does also mean defining the tools that will be used, in fact, many different of them were created, such as a \textit{Test Plan}, an \textit{UVM} and the \textit{checkers}.
 
 
 \subsection{Test Plan}
-In order to have a good coverage of the cases, and good reports to find bugs, it is very important to have a test plan.\\
+In order to have a good coverage of the cases, and good simulations to find bugs, it is very important to have a test plan.
 
-The test plan defines all the different cases to test for a submodule or for the entire VPU. This means trying to find all the different corner cases stimulating the DUT.\\
+The test plan defines all the different cases to test for a submodule or for the entire VPU. This means trying to find all the different corner cases stimulating the DUT.
+Whenever possible, a good test plan only includes different sets of stimulus, in this way an easy implementation is possible. But this situation does not cover all the possible cases. For instance, not every case could be tested in a submodule of the VPU only modifying the inputs from the scalar core.
+Which means that sometimes it is necessary to create some modified settings, to create the correct environment for the test.
 
-If there is the possibility a good test plan only includes different sets of stimulus, in this way an easy implementation is possible. But this situation does not cover all the possible cases. For instance, not every case could be tested in a submodule of the VPU only modifying the inputs from the scalar core.\\
-Which means that sometimes it is necessary to create some modified settings, to create the correct environment for the test.\\
-
-It was created a test plan to stress the load operations. Those are affecting a lot of submodules of the VPU, but the focus will be on the Load Buffer and on the LMU, mainly.\\
+It was created a test plan to stress the load operations. Those are affecting a lot of submodules of the VPU, but the focus will be on the Load Buffer and on the LMU, mainly.
 Let's now analyze some of the created tests.
 
 \subsubsection{Test on consecutive elements}
-The first test planned was a simple test about consecutive elements, this means all the elements are sent in order. Of course this is a simple case, and it is thought to test if all the chain to the effective load are working. In fact, it is a regression test.\\
+The first test planned was a simple test about consecutive elements, this means that all the elements are sent in order. Of course this is a simple case, and it is thought to test if all the chain to the effective load are working. In fact, it is a regression test.
 
-The only constraint meant to be in this test is the sequentiality of the elements.\\
-An example could be the one represented in Figure \ref{cache-to-lb-seq-ex}.
+The only constraint meant to be in this test is the sequentiality of the elements.
+An example is the one reported in Figure \ref{cache-to-lb-seq-ex}.
 
 
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-seq-ex.png}
-    \caption{Sequential inputs from avispado}
+    \caption{Sequential inputs from Avispado}
     \label{cache-to-lb-seq-ex}
 \end{figure}
 
 \subsubsection{Test on random values}
-The second kind of test to implement is for sure the random test. This will stress the ability to use different elements ID and different loads at the same time. In this way all the handling for the positions, calculated based on the load and on the element ID, is stressed.\\
+The second kind of test to implement is the random test. This will stress the ability to use different elements ID and different loads at the same time. In this way all the handling for the positions, calculated based on the load and on the element ID, is stressed.
+It was created a special modality to constrain the randomness to the possible values. This was implemented in the UVM using the configurations for the sequence.
 
-It was created a special modality to constrain the randomness to the possible values. This was implemented in the UVM using the configurations for the sequence.\\
-
-An example on random inputs from the same load could be the one represented in Figure \ref{cache-to-lb-rnd-ex}.
+An example of random inputs from the same load is the one represented in Figure \ref{cache-to-lb-rnd-ex}.
 
 \begin{figure}[H]
     \centering
@@ -303,7 +295,7 @@ An example on random inputs from the same load could be the one represented in F
     \label{cache-to-lb-rnd-ex}
 \end{figure}
 
-It is also possible to have inputs from two loads, as in Figure \ref{cache-to-lb-ooo-ex}.
+It is also possible to have inputs from two loads, as reported in Figure \ref{cache-to-lb-ooo-ex}.
 
 \begin{figure}[H]
     \centering
@@ -313,21 +305,20 @@ It is also possible to have inputs from two loads, as in Figure \ref{cache-to-lb
 \end{figure}
 
 \subsubsection{Test on splitted elements} 
-A very interesting case is revealed when studying the positions.\\
-Let's take into account a line of elements sent by the LMU to the Load Buffer. In this case the SEW needs to be different from 64, so the case will use SEW = 32.\\
+A very interesting case is revealed when studying the positions.
+Let's take into account a line of elements sent by the LMU to the Load Buffer. In this case the SEW needs to be different from 64, so the case will use SEW = 32.
+The data sent will be sequential, starting from 65 to 80. In this way it is possible to test if the output is disposed correctly and so if the Load Buffer for the Lane[0] stores 80-65 as values, in this order.
 
-The data sent will be sequential starting from 65 to 80. In this way it is possible to test if the output is disposed correctly and so if the Load Buffer for the Lane[0] stores 80-65 as values, in this order.\\
-
-An example could be the one represented in Figure \ref{cache-to-lb-split-ex}. It also shows how the input is splitted in the LB.
+The situation explained is the one reported in Figure \ref{cache-to-lb-split-ex}. It does also show how the input is splitted in the LB.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-split-ex.png}
+    \includegraphics[scale = 0.65]{Chapter_2/img/cache-to-lb-split-ex.png}
     \caption{Input splitted into the LB}
     \label{cache-to-lb-split-ex}
 \end{figure}
 
-For reference let's analyze a binary used for this specific case.
+For reference let's analyze the binary used for this specific case.
 \newpage
 
 \linespread{1}
@@ -366,19 +357,19 @@ RVTEST_DATA (
 \end{lstlisting}
 \linespread{1.2}
 
-The test is initialized with a macro, defining the SEW = 32 and the size in bit = 512.\\
-Then the data (the one that follows the instructions) is loaded into a register as address, and is summed an offset of \emph{0x3c}, equal to 60 in decimal.\\ This is the exact value needed to have the first sent element id = 65. As the number of elements will be 512/32 = 16 the element ids will go from 65 to 80.\\
+The test is initialized with a macro, defining the SEW = 32 and the size in bit = 512.
+Then the data (the one that follows the instructions) is loaded into a register as address, and is summed an offset of \emph{0x3c}, equal to 60 in decimal. This is the exact value needed to have the first sent element id = 65. As the number of elements will be 512/32 = 16 the element ids will go from 65 to 80.
 
 \subsubsection{Test on retries}
-The last test typology is about the retry mechanism. This occurs when all the three lines are filled with an element in the same position, and then a fourth elements arrives, this means that the Load Buffer does not have another position for one of the elements, thus one of the elements needs to go back to the sender and a new request is made.\\
+The last test typology is about the retry mechanism. This occurs when all the three lines are filled with an element in the same position, and then a fourth elements arrives, this means that the Load Buffer does not have another position for one of the elements, thus one of the elements needs to go back to the sender and a new request is made.
 
-Considering SEW = 64, there are different versions about this test: it can be a simple in order retry with elements 0-40-80-120-... as inputs, it can be out of order as 0-40-120-80-..., or it can be with two different loads.\\
+Considering SEW = 64, there are different versions about this test: it can be a simple in-order retry with elements 0-40-80-120-... as inputs, it can be out-of-order as 0-40-120-80-..., or it can be with two different loads.
 
-The easy example is represented in Figure \ref{cache-to-lb-ret-ex}. 0-40-80 are already filling the spots where 120 will try to fit. So a retry is needed, discarding 120.
+The easier example is represented in Figure \ref{cache-to-lb-ret-ex}. 0-40-80 are already filling the spots where 120 will try to fit. So a retry is needed, discarding 120.
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.5]{Chapter_2/img/cache-to-lb-ret-ex.png}
+    \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-ret-ex.png}
     \caption{Stimulated retry}
     \label{cache-to-lb-ret-ex}
 \end{figure}
@@ -388,7 +379,7 @@ The out-of-order example is represented in Figure \ref{cache-to-lb-ooo-ret-ex}. 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.5]{Chapter_2/img/cache-to-lb-ooo-ret-ex.png}
+    \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-ooo-ret-ex.png}
     \caption{Stimulated retry with out-of-order values}
     \label{cache-to-lb-ooo-ret-ex}
 \end{figure}
@@ -396,20 +387,16 @@ The out-of-order example is represented in Figure \ref{cache-to-lb-ooo-ret-ex}. 
 
 
 \section{Verification Process}
-The test executed are just the base for the verification. The tests can only define some functionalities, but to test all of them a complete functional verification is required.\\
-
-
-The approach is normally to define some functionalities and then compare them to the design. This of course is the crucial part, because it is not always obvious how a specific case works. Also there are different ways to test those functionalities.\\
+The test executed are just the base for the verification. The tests can only define some functionalities, but a complete functional verification is required to test all of them.
+The normal approach starts with defining some functionalities and then comparing them to the design. This of course is the crucial part, because it is not always obvious how a specific case works. Also, there are different ways to test these functionalities.
 
 \subsection{Scoreboard}
-As saw into the test plan, an easy way to test the results is the scoreboard, thus to have a predicted value and then to compare it against the calculated one.\\
-
-Before the work of this thesis started the UVM for the interface and a scoreboard for the results were already implemented by the BSC verification team. Let's now analyze a little bit how the scoreboard works and why it was useful to develop other tests.
+As seen into the test plan, an easy way to test the results is the scoreboard, thus to have a predicted value and then to compare it against the calculated one.
+Before the work of this thesis started, the UVM for the Avispado interface and a scoreboard for the VPU results were already implemented by the BSC verification team. Let's briefly analyze how the scoreboard works and why it was useful to develop other tests.
 
 \subsubsection{Spike}
 Spike is a RISC-V ISA Simulator. For this specific project it was extended to support the vector extension.
-
-It is used first to simulate the Avispado core, producing stream of vector instructions and memory addresses. Those are feed to the VPU using the UVM. A result is produced using also the Spike vector extension simulation. Finally the results are compared and reported into a scoreboard. A simple scheme is represented in Figure \ref{bin-to-log}.
+Spike has two functions, the first one is to simulate the Avispado core, producing stream of vector instructions and memory addresses. Those are feed to the VPU using the UVM. The second function is to produce a result to be compared with the one produced by the VPU. A simple scheme is represented in Figure \ref{bin-to-log}.
 
 \begin{figure}[H]
     \centering
@@ -418,13 +405,12 @@ It is used first to simulate the Avispado core, producing stream of vector instr
     \label{bin-to-log}
 \end{figure}
 
-This kind of tool is very useful when running tests because it is faster than a specific test for each component the test is stressing, and at the same time can give hints about the working condition. Of course it is just a first step, because it will be hard to find a bug using only the comparison with the final result.
+This kind of tool is very useful because it can give an idea of the general result and at the same time can give hints about the working condition of the VPU. Of course it is just a first step, because often it is hard to find a bug only using the comparison with the final result.
 
 \subsubsection{Load Management Unit's scoreboard}
-The aim of this thesis was principally based on testing the Load operations, so a scoreboard for the LMU was created.
+The aim of this thesis was principally based on testing the load operations, so a scoreboard for the LMU was created.
 
-Recalling the LMU working model, it first takes into account the stride, reversing the data in case of negative stride, then the data is positioned correctly again, then it is compacted considering the stride, and finally it is aligned to match with correct ID.
-
+Recalling the LMU working model, the module first takes into account the stride, reversing the data in case of negative stride, then the data is positioned correctly again, then it is compacted considering the stride, and finally it is aligned to match with correct ID.
 In high level it was done using vectors, and a couple of steps were merged together. It is possible to see below the pseudo code representing the implementation in this way.
 
 \linespread{1}
@@ -456,17 +442,14 @@ In high level it was done using vectors, and a couple of steps were merged toget
 \linespread{1.2}
 
 Also the mask was predicted in a similar way, thus the masking step was then implemented with a simple check on the mask to have the correct result.
-
 In this way it is possible to have an exact result for the LMU, so when a test fails, it is always possible to check if the LMU performed correctly with the data it received in input.
 
 \subsubsection{Load Buffer's scoreboard}
 For the Load Buffer the behaviour was really complicated, so a simplified  version of a scoreboard was implemented.
+Hence, it does not work on the correct result operation-per-operation, because the LB has three layer of deepness and does always try to optimize the output. So, to implementing all the rules about the output would mean to create a similar structure with an high risk to create a bug in the verification model.
 
-Hence it does not work on the correct result operation per operation, this because the LB has 3 layer of deepness and always tries to optimize the output. So to implement all the rules about the output would be to create a similar structure with an high risk to create a bug in the Verification model.
-
-The concept was to see the data in input and then to expect, eventually, the same data in the correct position as output. This of course is not conflicting with the concept of retry, in fact when a retry is executed it is guaranteed all the data as output, eventually.
-
-It was implemented as an assertion (whose behavior will be explained in the following section), to create a time correlation.
+The idea was that the data observed as input would eventually become the output data, placing in the correct position. This of course is not conflicting with the concept of retry. In fact, the retry mechanism only delays the data.
+It was implemented as an assertion to take advantage of the time correlation.
 
 A pseudo version of this checker is represented below.
 \bigskip
@@ -498,27 +481,24 @@ endfunction
 \linespread{1.2}
 \bigskip
 
-Using the element\+id and the corresponding bank (based on the SEW), it is possible to predict the result for a specific location and compare it. In this pseudo code it is not very visible the time handling, but the \emph{if} statement will wait until the result goes as output.
+Using the \emph{element\+id} and the corresponding bank (based on the SEW), it is possible to predict the result for a specific location and compare it with the calculated one. In this pseudo code the time handling is not very visible, but the \emph{if} statement will wait until the result goes as output.
 
 
 \subsection{Checkers}
-In order to connect them to the whole structure the binding method was used: basically, when a file containing the checker is created, it is compiled with a bind option to connect it to an RTL file. In this way the files can be kept separate and the Design Team and the Verification Team can work together on different files. \cite{binding}
-
-\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=l, numbers=none]
-$PATH_LB/LoadBuffer.sv -mfcu -cuname $PATH_LBC/LoadBuffer_checker.svh
+In order to connect the checkers to the whole structure the binding method was used: basically, when a file containing the checker is created, it is compiled with a bind option to connect it to an RTL file. In this way the files can be kept separate and the Design Team and the Verification Team can work together on different files. \cite{binding}
+\begin{lstlisting}[language=Verilog,style=verilog-style, frame=l, numbers=none]
+vlog $PATH_LB/LoadBuffer.sv -mfcu -cuname $PATH_LBC/LoadBuffer_checker.svh
 \end{lstlisting}
-spiegazione
-%TODO
-\begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=l, numbers=none]
+In the code above the compiling line for the LoadBuffer RTL is reported, with the binding option recalling the checker, in order to compile it as well.
+Then, as the following code illustrates, the bind statement is written into the checker file. This statement will connect all the in/out ports between the DUT and the checker. 
+\begin{lstlisting}[language=Verilog,style=verilog-style, frame=l, numbers=none]
 bind LoadBuffer LoadBuffer_checker bind_LoadBuffer_checker (.*);
 \end{lstlisting}
 
 
 \subsubsection{Load Management Unit's assertions}
 The main focus was on the calculated result and on the handshake with the other components.
-
-In the verification plan were previously defined all the functionality to check, then a list of assertions was used to produce a good checker.
-
+All the functionalities to be checked were define in the verification plan, then a list of assertions was used to produce a good checker.
 The list of all the checkers can be found in Appendix.
 
 \begin{table}[H]
@@ -558,7 +538,7 @@ The list of all the checkers can be found in Appendix.
 
 \toran a\+load\+sync\+end\+beh & when num\+load\+inflight = 0, load\+sync\+end\+i = 0 \\ \hline
 
-\tloran a\+load\+req\+sync\+end & load\+sync\+end\+i cannot be simultanous with a load\+granted\+i \\ \hline
+\tloran a\+load\+req\+sync\+end & load\+sync\+end\+i cannot be simultanous with load\+granted\+i \\ \hline
 
 \toran a\+el\+count\+sew\+i & when $stride\_i \neq (1, 2, 4)\cdot sew\_i$ (in bytes), \\\toran & el\+count has to be = 1 \\ \hline
 
@@ -584,9 +564,9 @@ The list of all the checkers can be found in Appendix.
     \label{tab_lmu_check}
 \end{table}
 
-As it is possible to see in Table \ref{tab_lmu_check} there are different assertions possible for a single submodule. 
+As it is possible to see in Table \ref{tab_lmu_check}, there are different assertions possible for a single submodule. 
 Here they are separated by colour distinguishing the different "categories".
-Indeed the red ones are checking the basic signals behaviour and the handshakes.\\
+Indeed, the red ones are checking the basic signals behaviour and the handshakes.
 An example is \textbf{a\+dvalid\+o}:
 \bigskip
 
@@ -609,17 +589,17 @@ a_dvalid_o : assert property( disable iff(!rsn_i || kill_i) p_dvalid_o )
 \begin{itemize}
     \item \textbf{load\+data\+valid\+i} is the input necessary to fire the assertion;
     
-    \item \textbf{sb\+correct} is the result of a task, that calculates if the scoreboard\+id is a valid one;
+    \item \textbf{sb\+correct} is the result of a task, that calculates if the \emph{scoreboard\+id} is a valid one;
     
-    \item \textbf{| - >} is the separation between the firing condition and the checking one. It is not time consuming (the time consuming version would be | = >), so checking for the second condition starts immediately;
+    \item \textbf{| - >} is the separation between the firing condition and the checking one. It is not time consuming (the time consuming version would be | = >), so the check for the second condition starts immediately;
     
     \item \textbf{\#\#1} command refers to 1 \textit{clock cycle(s)} delay;
     
     \item \textbf{load\+dvalid\+o} asserted is the expected output.
 \end{itemize}
 
-The light blue ones are scoreboard-like assertions, indeed are checking the scoreboard\+id, the data in output and also the masks.\\
-They use the results of the tasks to check the values, it is possible to see an example in \textbf{a\+el\+ids\+o} is possible to see how an assertion uses the result of a task.
+The light blue ones are scoreboard-like assertions, indeed are checking the scoreboard\+id, the data in output and also the masks.
+They use the results of the tasks to check the values, it is possible to see an example in \textbf{a\+el\+ids\+o}where it shown how an assertion uses the result of a task.
 
 \newpage
 \linespread{1}
@@ -664,16 +644,15 @@ a_el_ids_o : assert property( disable iff(!rsn_i || kill_i) p_el_ids_o )
 \linespread{1.2}
 \bigskip
 
-It is possible to see the property uses the value \textit{computed\+el\+id\+o}, a global variable. It is important to say the task compute\+ids is not called by the property but from another external process not displayed here.
+It is possible to see that the property uses the value \emph{computed\+el\+id\+o}, a global variable. It is important to say that the task \emph{compute\+ids} is not called by the property but from another external process not displayed here.
+Finally, the yellow ones are just checking the conditions for the reset and the expected output.
 
-Finally the yellow ones are just checking the conditions for the reset and the expected output.
-
-It is also important to notice, some of those \textit{are not assertions}, but \textit{assumptions}. This means that they are conditions on the input and not on the outputs. There is no difference for the Functional Verification, but there will be for the Formal one. This will be better explained later on this Chapter.
+It is also important to notice that some of those \emph{are not assertions}, but \emph{assumptions}. This means that they are conditions on the input and not on the outputs. There is no difference for the Functional Verification, unlike with Formal Verification.
 
 
 
 \subsubsection{Load Buffer's assertions}
-A similar approach was adopted for the Load Buffer. Having a lot of interfaces the LB has also a lot of handshakes, and so assertions. For this in the Table \ref{tab_lb_check} are only reported some categories containing all the assertions for an interface.
+A similar approach was adopted for the Load Buffer. Having a lot of interfaces the LB has also a lot of handshakes, and so assertions. For this reason, in the Table \ref{tab_lb_check} are only reported some categories containing all the assertions for an interface.
 
 
 \begin{table}[H]
@@ -747,7 +726,7 @@ A similar approach was adopted for the Load Buffer. Having a lot of interfaces t
     \label{tab_lb_check}
 \end{table}
 
-A good example for the handshake is \textbf{a\+mem\+sync\+end\+i}. This is an assumption on the inputs, but will be treated as an assertion.\\
+A good example for the handshake is \emph{a\+mem\+sync\+end\+i}. This is an assumption on the inputs, but will be treated as an assertion.
 
 \linespread{1}
 \begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
@@ -757,26 +736,25 @@ property p_mem_sync_end_i;
 endproperty : p_mem_sync_end_i
 
 
-a_mem_sync_end_i : assume property (disable iff (!rsn_i || kill_i) p_mem_sync_end_i) 
-        else $error('unknown memop scoreboard id on memop_sync_end_i asserted');
+a_mem_sync_end_i: assume property(disable iff(!rsn_i||kill_i) p_mem_sync_end_i) 
+        else $error('unknown memop sd id on memop_sync_end_i asserted');
 
 
 \end{lstlisting}
 \linespread{1.2}
 
-The property is using the system function \textbf{\emph{\$isunknown}}, this function return if the value passed is unknown ('\emph{X}' or '\emph{Z}'). So basically when \textbf{\emph{memop\+sync\+end\+i}} is asserted, it must be known the value of its scoreboard id.
+The property is using the system function \textbf{\emph{\$isunknown}}, this function returns if the value passed is unknown ('\emph{X}' or '\emph{Z}'). So basically when \emph{memop\+sync\+end\+i} is asserted, the value of its scoreboard id must be known.
 
 
-Then  \textbf{a\+data\+corruption} is the scoreboard like discussed before, and finally there are the reset's ones.
+Then \emph{a\+data\+corruption} is the scoreboard like discussed before, and finally there are the reset's ones.
 The assertions are reported into the Appendix.
 
 
 
 
 \subsection{Drivers}
-The other tool used to test the submodules is the Driver. It is a file that defines the stimuli and their order. A very defined order of them defines an operation. It is so possible to create the situation in which the DUT will work as expected.
-
-It is important to notice the driver is enabled only when the UVM is configured as ACTIVE.
+The other tool used to test the submodules is the Driver. It is a file that defines the stimuli and their order. A very specific order of signals defines an operation. It is then possible to create the situation in which the DUT will work as expected.
+It is important to notice that the driver is enabled only when the UVM is configured as ACTIVE.
 
 \subsubsection{Load Management Unit}
 This is the only submodule on which was developed a driver, due to the reduced complexity. In fact, the driver can be very complex when different handshakes are present.
@@ -856,18 +834,13 @@ end
 
 The operation implemented is the granting of a load request. The code is mainly divided in three parts: 
 \begin{itemize}
-    \item the \emph{first} one makes some randomization for the data and the checks if the driver is following the assumptions about the inputs (in this case on the loads inflight);
+    \item the \emph{first} one makes some randomization for the data while it checks if the driver is following the assumptions about the inputs (in this case on the loads inflight);
     
     \item the \emph{second} part is the driving part, all the inputs are well defined, and also some clock cycles need to be waited sometimes. All the value assigned with \textbf{\emph{command}} have been randomized, but constrained to valid values;
     
-    \item the \emph{third} part is just the updating of an internal fifo, useful to be in sync with the LMU and to not fail the assumptions.
+    \item the \emph{third} part is just the updating of an internal FIFO, useful to be in sync with the LMU and to not fail the assumptions.
 \end{itemize}  
 \bigskip
-
-
-
-
-
 
 
 
