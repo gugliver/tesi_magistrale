@@ -483,7 +483,7 @@ endfunction
 
 Using the \emph{element\+id} and the corresponding bank (based on the SEW), it is possible to predict the result for a specific location and compare it with the calculated one. In this pseudo code the time handling is not very visible, but the \emph{if} statement will wait until the result goes as output.
 
-
+\newpage
 \subsection{Checkers}
 In order to connect the checkers to the whole structure the binding method was used: basically, when a file containing the checker is created, it is compiled with a bind option to connect it to an RTL file. In this way the files can be kept separate and the Design Team and the Verification Team can work together on different files. \cite{binding}
 \begin{lstlisting}[language=Verilog,style=verilog-style, frame=l, numbers=none]
@@ -726,7 +726,7 @@ A similar approach was adopted for the Load Buffer. Having a lot of interfaces t
     \label{tab_lb_check}
 \end{table}
 
-A good example for the handshake is \emph{a\+mem\+sync\+end\+i}. This is an assumption on the inputs, but will be treated as an assertion.
+A good example for the handshake is \emph{a\+mem\+sync\+end\+i}. This is an assumption on the inputs, but will be treated as an assertion.\\
 
 \linespread{1}
 \begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
