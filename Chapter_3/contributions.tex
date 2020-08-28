@@ -66,7 +66,7 @@ For reference in Figure \ref{2-loads} there is the interface of a simulation, in
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.25]{Chapter_3/img/2-loads.png}
-    \caption{Two loads issued with ther same id}
+    \caption{Two loads issued with the same id}
     \label{2-loads}
 \end{figure}
 
@@ -203,15 +203,12 @@ In Figure \ref{torta} it is represented the distribution of the errors found by 
 
 \begin{figure}[H]
     \centering
-    \includegraphics[scale = 0.7]{Chapter_3/img/torta.png}
-    \caption{Bug founded}
+    \includegraphics[scale = 0.6]{Chapter_3/img/torta.png}
+    \caption{Found bugs}
     \label{torta}
 \end{figure}
 
-All the bugs found can be grouped in three categories: \emph{Synthesis}, these are problems related to unconnected wires uninstantiated logic; \emph{Waveform analisys}, these are all the bugs found simply analizyng the waveform, tracing back  the error, starting from a wrong result of the VPU; the \emph{Checkers}, in this category there are all the bugs directly found using assertions and assumptions.
+All the bugs found can be grouped in three categories: \emph{Synthesis}, these are problems related to unconnected wires uninstantiated logic; \emph{Waveform and specifications analysis}, these are all the bugs found simply analyzing the waveform or the specifications, tracing back the error, starting from a wrong result of the VPU; the \emph{Checkers}, in this category there are all the bugs directly found using assertions and assumptions.
 
 As displayed, not all the "checkers" errors were found using the tools created in this work, because some of them were spotted using assertions on the interfaces developed by the Verification Team.
 
-
-
-%54% design team analisis, 32% assertions, 14%sysntheis

@@ -57,7 +57,7 @@ In Figure \ref{riscv-base-instruction-formats} it is possible to see how the bas
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.27]{Chapter_1/img/riscv-base-instruction-formats.png}
-    \caption{RISC-V base instruction formats. \cite{RISC-V-Instruction-Set-Manual}}
+    \caption{RISC-V base instruction formats~\cite{RISC-V-Instruction-Set-Manual}}
     \label{riscv-base-instruction-formats}
 \end{figure}
 
@@ -71,7 +71,7 @@ In Figure \ref{riscv-load-store} it is possible to see how the load-store instru
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.27]{Chapter_1/img/riscv-load-store.png}
-    \caption{RISC-V load/store instruction formats. \cite{RISC-V-Instruction-Set-Manual}}
+    \caption{RISC-V load/store instruction formats~\cite{RISC-V-Instruction-Set-Manual}}
     \label{riscv-load-store}
 \end{figure}
 
@@ -79,12 +79,10 @@ In Figure \ref{riscv-load-store} it is possible to see how the load-store instru
 \subsection{Parallelism, Vectors and the V-Extension}
 During the last years, the parallel architecture is gaining inertia on the processors field. This is happening because the real world has parallel behaviour and so the hardware we use to compute simulations and calculus needs to be likewise~\cite{Parallel-Computing}.
 
-%But why this is happening now and not before?\\
-%In the past, parallel computing efforts have shown promise and gathered investment, but uniprocessor computing did always eventually prevailed, what is different now?\\
 Also, most of the paradigms that led to the decision of using a single core, are now changing quickly as the technology changes its needs.
 In fact, as the technology scales down to the nanometers, the power and the energy consumptions are becoming a problem. Also, the cost of a single transistor is significantly lower.
 
-%However the multicore solution does not still meet the conformity for old binaries compilations and it could be difficult to program. Thus, the solution of a parallel architecture with "manycores" seems to be the right one.\\
+\
 
 A solution to the efficiency problem are the VPU (Vector Processing Units) working with single instruction multiple data (SIMD), in this way it possible to maintain the binaries easy to program, but very powerful in term of data computation..
 
@@ -96,7 +94,7 @@ As shown in Figure \ref{Multithreading}, with standard multithreading there will
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.5]{Chapter_1/img/threads.png}
-    \caption{Multithreading Processor Clock Time usage  \cite{L15-Krste}}
+    \caption{Multithreading Processor Clock Time usage~\cite{L15-Krste}}
     \label{Multithreading}
 \end{figure}
 
@@ -106,7 +104,7 @@ So that the usage will not be distributed as for standard multithreading process
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.4]{Chapter_1/img/time-usage.png}
-    \caption{Vector Processor Processor Time usage \cite{L15-Krste}}
+    \caption{Vector Processor Processor Time usage~\cite{L15-Krste}}
     \label{Vectoring}
 \end{figure}
 
@@ -119,14 +117,14 @@ In Figure \ref{Vector-Latency} it is possible to see how a vector needs to wait 
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.5]{Chapter_1/img/lat-pen.png}
-    \caption{Latency penalty on vector processing units \cite{L15-Krste}}
+    \caption{Latency penalty on vector processing units~\cite{L15-Krste}}
     \label{Vector-Latency}
 \end{figure}
 
 
 The design implementation that is been used for the EPI project and so in this thesis is the V-Extension (V stands for Vector), and it is in current development. The reference is the V-Extension 0.7.1.
 
-The vector extension adds 32 vector registers, and 5 unprivileged CSRs (\emph{vstart}, \emph{vxsat}, \emph{vxrm}, \emph{vtype}, \emph{vl}) to the base scalar \mbox{RISC-V} ISA\cite{riscv-v-specs}.
+The vector extension adds 32 vector registers, and 5 unprivileged CSRs (\emph{vstart}, \emph{vxsat}, \emph{vxrm}, \emph{vtype}, \emph{vl}) to the base scalar \mbox{RISC-V} ISA~\cite{riscv-v-specs}.
 There are also 8 vector predicate registers (vp0-vp7). The CSRs vectors define the configurations.
 
 \begin{table}[H]
@@ -149,7 +147,7 @@ base scalar ISA~\cite{riscv-v-specs}.\\
 
 
 The vector unit must be conﬁgured before being used. 
-I.e. the active vector length is held in the CSR \emph{vl}, which can only hold values between 0 and MVL (Maximum Vector Lenght parameter) inclusive.
+I.e. the active vector length is held in the CSR \emph{vl}, which can only hold values between 0 and MVL (Maximum Vector Length parameter) inclusive.
 The active vector length is usually written with the \textbf{\emph{setvl}} instruction.
 
 \subsubsection{Vector instructions}
@@ -196,21 +194,21 @@ It is possible to see in Figure \ref{verification-tecnology} how the cost for ve
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.4]{Chapter_1/img/cost-scale.png}
-    \caption{The design cost vs the technology node \cite{verification-book-2018}}
+    \caption{The design cost vs the technology node~\cite{verification-book-2018}}
     \label{verification-tecnology}
 \end{figure}
 
 Verification is responsible to make sure that the design is in track with the specification. So, if the design complexity increases, the same does its verification process.
 
 This is of course an issue for the time-to-market. 
-In particular functional design verification takes \mbox{40–50\%} of the project resources. In other words, increasing the productivity of functional design verification and shorten the design / simulate / debug / cover loop is an essential task \cite{verification-book-2018}.
+In particular functional design verification takes \mbox{40–50\%} of the project resources. In other words, increasing the productivity of functional design verification and shorten the design / simulate / debug / cover loop is an essential task~\cite{verification-book-2018}.
 
 Moreover, the compounded complexity grows faster then the compounded productivity. This gap only means the verification needs to be faster and hence needs to implement more techniques.
 It is possible to see a study on the complexity/productivity gap in Figure \ref{complexity-gap}
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.4]{Chapter_1/img/prod-compl.png}
-    \caption{The gap between the complexity and the productivity \cite{verification-book-2018}}
+    \caption{The gap between the complexity and the productivity~\cite{verification-book-2018}}
     \label{complexity-gap}
 \end{figure}
 
@@ -223,7 +221,7 @@ SystemVerilog is an hardware description language, born as an evolution of the V
 They are mainly composed by \emph{assertions} and \emph{assumptions}, some really powerful statements used to deﬁne the constraints of the DUT’s behaviour.
 
 Assertions and assumptions are syntactically identical, but the first one refers to the output signals while the second one to the input signals.
-They are mainly composed by two parts which are both conditions, even though they act differently. The first part is a condition to \textit{"fire"}, this means that when the condition is true the assertion, or assumption, starts checking for the second part.\cite{verification-book-2016}
+They are mainly composed by two parts which are both conditions, even though they act differently. The first part is a condition to \textit{"fire"}, this means that when the condition is true the assertion, or assumption, starts checking for the second part~\cite{verification-book-2016}.
 
 The second part is another check on some condition, and can reveal the result of the check. At this point the possible results are \textit{True} or \textit{False}.
 
@@ -264,7 +262,7 @@ In functional verification the assertions and the assumptions are implemented in
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.55]{Chapter_1/img/ass-ass.png}
-    \caption{Assertions and assumptions into an RTL deisng}
+    \caption{Assertions and assumptions into an RTL design}
     \label{ass-ass}
 \end{figure}
 
@@ -302,7 +300,7 @@ There are also illustrated the various "zones" in which the result is produced.
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.65]{Chapter_1/img/for-com.png}
-    \caption{Growing complexity and expected results in formal verification}
+    \caption{Growing complexity and expected results in formal verification.}
     \label{for-com}
 \end{figure}
 
@@ -337,7 +335,7 @@ In Figure \ref{avi-vpu} it is possible to see the interface between Avispado and
 \end{figure}
 
 
-The instructions are issued with a credit system, whose number corresponds to the depth of the issue queue of the VPU.
+The instructions are issued with a credit system, whose number corresponds to the depth of the issue queue of the VPU. All the informations about the interface are reported into the paper published by SemiDynamics~\cite{avi-vpu}
 
 
 
@@ -402,7 +400,6 @@ The number of elements a vector registers holds is given by VLEN/SEW, according 
         16  & 1024     \\ \hline
         8   & 2048     \\ \hline
     \end{tabular}
-    %\caption{Caption}
     \label{sew-el}
 \end{table}
 
@@ -428,13 +425,13 @@ In Figure \ref{vrf-32} it is possible to identify the sub-banks as subdivision o
 
 
 \subsection{The UVM}
-As mentioned before, the UVM is the solution to the standardization problem of the verification. In fact, it is a transaction-level methodology (TLM) designed for testbench development. It is a class library that facilitates writing configurable and reusable code \cite{verification-book-2018}.
+As mentioned before, the UVM is the solution to the standardization problem of the verification. In fact, it is a transaction-level methodology (TLM) designed for testbench development. It is a class library that facilitates writing configurable and reusable code~\cite{verification-book-2018}.
 
 The testbenches created are designed to be reusable, as a result less code and more production is achieved.
 
 This is mainly obtained with the polymorphism. It means an object can be used to define a reusable class. Operating with this technique an object can be used as a super-class and other sub-classes can be created.
 
-It works following an hierarchy method, and every component can only operate with the components above it. In this way multiple subcomponents can be instantiated.
+It works following an hierarchy method, and every component can only operate with the components above it. In this way multiple sub-components can be instantiated.
 
 \subsubsection{Generic UVM}
 In Figure \ref{gen-uvm} it is possible to see an example of a standard UVM.

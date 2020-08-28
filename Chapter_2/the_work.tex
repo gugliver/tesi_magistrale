@@ -291,7 +291,7 @@ An example of random inputs from the same load is the one represented in Figure 
 \begin{figure}[H]
     \centering
     \includegraphics[scale = 0.6]{Chapter_2/img/cache-to-lb-rnd-ex.png}
-    \caption{Random inputs from avispado}
+    \caption{Random inputs from Avispado}
     \label{cache-to-lb-rnd-ex}
 \end{figure}
 
@@ -485,7 +485,7 @@ Using the \emph{element\+id} and the corresponding bank (based on the SEW), it i
 
 \newpage
 \subsection{Checkers}
-In order to connect the checkers to the whole structure the binding method was used: basically, when a file containing the checker is created, it is compiled with a bind option to connect it to an RTL file. In this way the files can be kept separate and the Design Team and the Verification Team can work together on different files. \cite{binding}
+In order to connect the checkers to the whole structure the binding method was used: basically, when a file containing the checker is created, it is compiled with a bind option to connect it to an RTL file. In this way the files can be kept separate and the Design Team and the Verification Team can work together on different files~\cite{binding}.
 \begin{lstlisting}[language=Verilog,style=verilog-style, frame=l, numbers=none]
 vlog $PATH_LB/LoadBuffer.sv -mfcu -cuname $PATH_LBC/LoadBuffer_checker.svh
 \end{lstlisting}
