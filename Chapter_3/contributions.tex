@@ -135,7 +135,7 @@ The last contribution was to create the modalities for the implemented tests. Th
 
 \linespread{1}
 \begin{lstlisting}[language=Verilog,style=verilog-style, backgroundcolor=\color{lyel_palette}, frame=tlb]
-//(for beautiness there is also a subtraction in case of overflow, 
+//(for elegance there is also a subtraction in case of overflow, 
 //in order to start from the smallest index possible).
 //The range_id is NOT getting smaller as the overflow occurs, 
 //because we do not want to cause more retries, so we put the index fixed to 0
@@ -182,7 +182,7 @@ end
 \end{lstlisting}
 \linespread{1.2}
 
-It is possible to see the handling of the element id sent by avispado. In this case the order of the ids is manipulated, however, this will not cause an error as the final result will be the same.
+It is possible to see the handling of the element id sent by Avispado. In this case the order of the ids is manipulated, however, this will not cause an error as the final result will be the same.
 In this way it is possible to stimulate the retry mechanism sending all the elements for the same position into the Load Buffer. There is also another version for the out-of-order retry.
 Those modalities can be configured for each test, and so randomized. In this way, they can be implemented in the automatic tests.
 

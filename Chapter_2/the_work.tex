@@ -87,7 +87,7 @@ min\+element\+id\+idx\+o    & index of the first valid \\
 \label{O-LMU}
 \end{table}
 
-In the Tables \ref{I-LMU} and \ref{O-LMU} are reported respectively the input and the output signals of the LMU, together with their descritpion.
+In the Tables \ref{I-LMU} and \ref{O-LMU} are reported respectively the input and the output signals of the LMU, together with their description.
 
 \subsubsection{Sequence ID}
 The sequence id ID is necessary as the memory system does not guarantee the in-order arrival of elements. Hence, this signal contains all the informations needed to correctly elaborate the data.
@@ -102,7 +102,7 @@ The \emph{seq\+id\+i} is composed by:
     
     \item \textbf{seq\+id\+i[28:22]} = \textit{el\+count}, identifies the number of valid elements being transmitted. Masked elements are valid elements; 
     
-    \item \textbf{seq\+id\+i[32:29]} = \textit{sb\+id}, scoreboard id of the load instruction that requesteds the data.
+    \item \textbf{seq\+id\+i[32:29]} = \textit{sb\+id}, scoreboard id of the load instruction that requested the data.
 \end{itemize}
 
 
@@ -418,7 +418,7 @@ In high level it was done using vectors, and a couple of steps were merged toget
         x=new[N_ELEMENTS][SEW];
         y=new[N_ELEMENTS][SEW];
 
-        //first assignement
+        //first assignment
         x[N_ELEMETS][SEW] = load_data_i[N_ELEEMTS*SEW]
 
         //consider the stride
